@@ -31,7 +31,7 @@
       document.getElementById("body").style.backgroundColor = app2;
     }
 
-    setInterval(cambia,500);
+    setInterval(cambia,100);
 
   </script>
 </html>
