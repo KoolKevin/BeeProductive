@@ -10,8 +10,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
         /**
         * @Route("/home")
         */
-        
         public function home() {
             return $this->render('index.html.twig');
+        }
+
+        /**
+        * @Route("/calendario")
+        */
+        public function calendario() {
+            return $this->render('calendario.html.twig');
         }
     }
