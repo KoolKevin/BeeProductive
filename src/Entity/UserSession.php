@@ -20,12 +20,12 @@ class UserSession
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="sess_id")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $fk_id_user;
+    private $fkIdUser;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $sess_id;
+    private $sessId;
 
     /**
      * @ORM\Column(type="date")
@@ -39,24 +39,24 @@ class UserSession
 
     public function getFkIdUser(): ?User
     {
-        return $this->fk_id_user;
+        return $this->$fkIdUser;
     }
 
-    public function setFkIdUser(?User $fk_id_user): self
+    public function setFkIdUser(?User $fkIdUser): self
     {
-        $this->fk_id_user = $fk_id_user;
+        $this->$fkIdUser = $fkIdUser;
 
         return $this;
     }
 
     public function getSessId(): ?int
     {
-        return $this->sess_id;
+        return $this->$sessId;
     }
 
-    public function setSessId(int $sess_id): self
+    public function setSessId(int $sessId): self
     {
-        $this->sess_id = $sess_id;
+        $this->$sessId = $sessId;
 
         return $this;
     }
