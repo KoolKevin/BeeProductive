@@ -46,7 +46,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
         }
 
-        /**
+       /**
         * @Route("/registrazione", methods={"POST"}, name="registrazione")
         */
         public function registra(Request $request) {
@@ -54,7 +54,7 @@ use Doctrine\ORM\EntityManagerInterface;
             $entityManager = $this->getDoctrine()->getManager();
 
             $user = new User();
-            
+
             $user->setUsername( $request->get('username') );
             $user->setMail( $request->get('mail') );
             $user->setPassword( $request->get('password') );
@@ -70,7 +70,7 @@ use Doctrine\ORM\EntityManagerInterface;
           else{
             return $this->render('landingPage.html.twig', array('registrazione' => 'NON avvenuta') );
           }
-          
+
         }
 
         /**
@@ -80,7 +80,7 @@ use Doctrine\ORM\EntityManagerInterface;
           if($this->session->get('login')){
             return $this->redirectToRoute("index");
           }
-          
+
           if($request->get('userName',false) && $request->get('password',false)){
             $userName = $request->get('userName');
             $password = $request->get('password');
@@ -108,14 +108,14 @@ use Doctrine\ORM\EntityManagerInterface;
               //redirect to index
               return $this->redirectToRoute("index");
 
-            } 
+            }
             else {
               //render not logged with error
               return $this->render('index.html.twig', ['error'=>"braaahh"]);
             }
-          } 
+          }
 
-         
+
         }
 
         //metodi privati
