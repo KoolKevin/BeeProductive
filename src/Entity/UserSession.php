@@ -23,7 +23,7 @@ class UserSession
     private $fkIdUser;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      */
     private $sessId;
 
@@ -54,7 +54,7 @@ class UserSession
         return $this->$sessId;
     }
 
-    public function setSessId(int $sessId): self
+    public function setSessId(string $sessId): self
     {
         $this->$sessId = $sessId;
 

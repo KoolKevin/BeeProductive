@@ -81,8 +81,8 @@ use Doctrine\ORM\EntityManagerInterface;
             return $this->redirectToRoute("index");
           }
 
-          if($request->get('userName',false) && $request->get('password',false)){
-            $userName = $request->get('userName');
+          if($request->get('username',false) && $request->get('password',false)){
+            $userName = $request->get('username');
             $password = $request->get('password');
 
             $repository = $this->getDoctrine()->getRepository(User::class);
@@ -92,9 +92,7 @@ use Doctrine\ORM\EntityManagerInterface;
             if($user && $user->getUsername() == $userName && $user->getPassword() == md5($password)){
               //render logged page and set session login
 
-              $fkUser = $user->getId();
-
-              //creo l'oggetto sessionItem, lo inserisco, e salvo l'userName nella session dell'utente
+              //creo l'oggetto sessionItem, lo inserisco, e salvo l'username nella session dell'utente
               $userSession = new UserSession();
               $userSession->setSessId($this->session->getId());
               $userSession->setFkIdUser($user);
@@ -111,7 +109,7 @@ use Doctrine\ORM\EntityManagerInterface;
             }
             else {
               //render not logged with error
-              return $this->render('index.html.twig', ['error'=>"braaahh"]);
+              return $this->render('landingPage.html.twig', array('registrazione' => 'errore') );
             }
           }
 
