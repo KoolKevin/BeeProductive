@@ -3,7 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Test;
-use App\Entity\UserSession;
+use App\Entity\Eventi;
+use App\Entity\Progetti;
 use App\Entity\User;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -44,16 +45,22 @@ use Doctrine\ORM\EntityManagerInterface;
         * @Route("/test")
         */
         public function test() {
+            $evento = new Eventi();
+
+            $user = $this->getDoctrine()->getRepository(User::class)->find(1);
+            $progetto = $this->getDoctrine()->getRepository(Progetti::class)->find(1);
+
+            $evento->setFkIdUtente($user);
+            $evento->setFkIdProgetto($progetto);
+            //$evento->setFkIdUtente(1);
+            //$evento->setFkIdProgetto(1);
+
+            $evento->setStartDate("0/0/0");
+            $evento->setTitolo("prova");
+            $evento->setPriorita(1);
+
             $entityManager = $this->getDoctrine()->getManager();
-
-            $test = new Test();
-            $test->setFunziona(true);
-
-
-            // tell Doctrine you want to (eventually) save the Product
-            $entityManager->persist($test);
-
-            // actually executes the queries (i.e. the INSERT query)
+            $entityManager->persist($evento);
             $entityManager->flush();
 
             return $this->render('index.html.twig');

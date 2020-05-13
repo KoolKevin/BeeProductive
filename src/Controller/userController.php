@@ -36,7 +36,7 @@ use Doctrine\ORM\EntityManagerInterface;
             //$userColorHex = $this->checkUserColor($this->session->get("login"));
 
             //pagine con user loggato
-            return $this->render('index.html.twig', array('login' => $this->session->get("login"),'color' => $userColorHex));
+          return $this->render('index.html.twig', array('login' => $this->session->get("login")/*,'color' => $userColorHex*/));
 
           } else {
             //render not logged template
@@ -57,7 +57,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
             $user->setUsername( $request->get('username') );
             $user->setMail( $request->get('mail') );
-            $user->setPassword( $request->get('password') );
+            $user->setPassword( md5($request->get('password')) );
 
             // tell Doctrine you want to (eventually) save the Product
             $entityManager->persist($user);
@@ -70,7 +70,6 @@ use Doctrine\ORM\EntityManagerInterface;
           else{
             return $this->render('landingPage.html.twig', array('registrazione' => 'NON avvenuta') );
           }
-
         }
 
         /**
@@ -87,47 +86,47 @@ use Doctrine\ORM\EntityManagerInterface;
 
             $repository = $this->getDoctrine()->getRepository(User::class);
 
-            $user = $repository->findOneByUsername($userName);
+            $user = $repository->findOneBy(['username' => $userName]);
+
+            return $this->render('landingPage.html.twig', array('registrazione' => $user->getUsername()) );
 
             if($user && $user->getUsername() == $userName && $user->getPassword() == md5($password)){
               //render logged page and set session login
 
               //creo l'oggetto sessionItem, lo inserisco, e salvo l'username nella session dell'utente
-              $userSession = new UserSession();
+              /*$userSession = new UserSession();
               $userSession->setSessId($this->session->getId());
               $userSession->setFkIdUser($user);
-
               $userSessionManager = $this->getDoctrine()->getManager();
               $userSessionManager->persist($userSession);
-              $userSessionManager->flush();
+              $userSessionManager->flush();*/
 
               $this->session->set('login',$user->getUsername());
 
               //redirect to index
               return $this->redirectToRoute("index");
-
             }
             else {
               //render not logged with error
               return $this->render('landingPage.html.twig', array('registrazione' => 'errore') );
             }
           }
-
-
         }
 
         //metodi privati
         private function checkLogin(){
          if($this->session->get('login',false)){
-           $repository = $this->getDoctrine()->getRepository(UserSession::class);
-           $userSession = $repository->findOneBysess_id($this->session->getId());
+           /*$repository = $this->getDoctrine()->getRepository(UserSession::class);
+           $userSession = $repository->findOneBysess_id($this->session->getId());*/
 
-           if($userSession && $userSession->getUsername() == $this->session->get('login')){
+           /*if($userSession && $userSession->getUsername() == $this->session->get('login')){
              return true;
            } else {
              return false;
-           }
-         } else {
+           }*/
+           return true;
+         } 
+         else {
            return false;
          }
        }
