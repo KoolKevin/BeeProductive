@@ -36,7 +36,7 @@ use Doctrine\ORM\EntityManagerInterface;
             //$userColorHex = $this->checkUserColor($this->session->get("login"));
 
             //pagine con user loggato
-          return $this->render('index.html.twig', array('login' => $this->session->get("login")/*,'color' => $userColorHex*/));
+            return $this->render('landingPage.html.twig', array('login' => $this->session->get("login")/*,'color' => $userColorHex*/));
 
           } else {
             //render not logged template
