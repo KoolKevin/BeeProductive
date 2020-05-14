@@ -12,21 +12,24 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       var calendarEl = document.getElementById('calendar');
+      var listaEventi = JSON.stringify( {{ eventi }} );
 
+      alert(listaEventi);
+      
       var calendar = new FullCalendar.Calendar(calendarEl, {
         plugins: [ 'dayGrid' ],
         defaultView: 'dayGridMonth',
 
         events: [
-          { // this object will be "parsed" into an Event Object
-            title: 'The Title', // a property!
+          { 
+            title: 'ciao', // a property!
             start: '2020-05-01', // a property!
-            end: '2020-05-05' // a property! ** see important note below about 'end' **
+            end: '2020-05-25' // a property! ** see important note below about 'end' **
           }
         ],
 
-        eventColor: '#378006',
-        eventTextColor: '#ffffff',
+        eventColor: '#FDD017',
+        eventTextColor: '#413839',
 
         header: {
           left:   'addEventButton',
@@ -68,6 +71,15 @@
 
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
+            <!--<div class="eventi" data-eventi="{% for evento in eventi %}
+                                                { 
+                                                  title: {{ evento.titolo }}, 
+                                                  start: '2020-05-01', 
+                                                  end: '2020-05-25'
+                                                },
+                                             {% endfor %}">
+            </div> <!-- serve a passare dati al javascript --> 
+            
             <div id="content">
                 <div class="container-fluid ">
                     <div class="row">

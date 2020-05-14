@@ -62,9 +62,13 @@ use Doctrine\ORM\EntityManagerInterface;
         /**
         * @Route("/profile/calendar/{username}", methods={"GET"}, name="loadUserPage")
         */
-
         public function generaPaginaUtente($username){
-          return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false) ) );
+          $repository = $this->getDoctrine()->getRepository(User::class);
+          $user = $repository->findOneBy(['username' => $username]);
+          $eventi = $user->getEventi();  //fa da solo
+          //$eventiJsoned = json_encode( $eventi ); i result set delle queary a quanto pare non vengono trasformati bene
+
+          return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "eventi" => $eventiJsoned ) );
         }
 
         /**
