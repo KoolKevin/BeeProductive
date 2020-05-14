@@ -65,4 +65,40 @@ use Doctrine\ORM\EntityManagerInterface;
 
             return $this->render('index.html.twig');
         }
+
+        /**
+        * @Route("/profile/calendar/{username}", methods={"GET"}, name="loadUserPage")
+        */
+
+        public function generaPaginaUtente($username){
+          return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false) ) );
+        }
+
+        /**
+        * @Route("/profile/eventList/{username}", methods={"GET"}, name="loadUserPage")
+        */
+
+        public function generaListaEventi($username){
+          return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true) ) );
+        }
+
+
+        //metodi privati
+        private function checkLogin(){
+         if($this->session->get('login')){
+           /*$repository = $this->getDoctrine()->getRepository(UserSession::class);
+           $userSession = $repository->findOneBysess_id($this->session->getId());*/
+
+           /*if($userSession && $userSession->getUsername() == $this->session->get('login')){
+             return true;
+           } else {
+             return false;
+           }*/
+           return true;
+         }
+         else {
+           return false;
+         }
+       }
+
     }

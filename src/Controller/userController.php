@@ -88,8 +88,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
             $user = $repository->findOneBy(['username' => $userName]);
 
-            return $this->render('landingPage.html.twig', array('registrazione' => $user->getUsername()) );
-
             if($user && $user->getUsername() == $userName && $user->getPassword() == md5($password)){
               //render logged page and set session login
 
@@ -115,7 +113,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
         //metodi privati
         private function checkLogin(){
-         if($this->session->get('login',false)){
+         if($this->session->get('login')){
            /*$repository = $this->getDoctrine()->getRepository(UserSession::class);
            $userSession = $repository->findOneBysess_id($this->session->getId());*/
 
@@ -125,7 +123,7 @@ use Doctrine\ORM\EntityManagerInterface;
              return false;
            }*/
            return true;
-         } 
+         }
          else {
            return false;
          }
