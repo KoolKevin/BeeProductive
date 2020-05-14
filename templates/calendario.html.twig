@@ -1,5 +1,58 @@
 {% extends 'base.html.twig'%}
 
+{% block stylesheets %}
+<link href="{{ asset('fullcalendar/packages/core/main.css') }}" rel='stylesheet' />
+<link href="{{ asset('fullcalendar/packages/daygrid/main.css') }}" rel='stylesheet' />
+{% endblock %}
+
+{% block javascripts %}
+
+<script src='{{ asset("fullcalendar/packages/core/main.js") }}'></script>
+<script src="{{ asset('fullcalendar/packages/daygrid/main.js') }}"></script>
+
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: [ 'dayGrid' ],
+      defaultView: 'dayGridMonth',
+      header: {
+        left:   'addEventButton',
+        center: 'title',
+        right:  'today prev,next'
+      },
+      customButtons: {
+        addEventButton: {
+          text: 'add event...',
+          click: function() {
+            var dateStr = prompt('Enter a date in YYYY-MM-DD format');
+            var date = new Date(dateStr + 'T00:00:00'); // will be in local time
+
+            if (!isNaN(date.valueOf())) { // valid?
+              calendar.addEvent({
+                title: 'dynamic event',
+                start: date,
+                allDay: true
+              });
+              alert('Great. Now, update your database...');
+            } else {
+              alert('Invalid date.');
+            }
+          }
+        }
+      }
+    });
+
+    calendar.render();
+  });
+
+</script>
+
+{% endblock %}
+
 {% block body %}
     <div id="wrapper">
         {{ include('robaDaIncludere/sidebar.html.twig') }}
@@ -8,44 +61,15 @@
             <!-- Main Content -->
             <div id="content">
 
-                {{ include('robaDaIncludere/navbar.html.twig') }}
 
 
-                <div class="container-fluid">
-                    <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
-                    </div>
+
+                <div class="container-fluid ">
 
                     <div class="row">
-                        <!-- Area Chart -->
-                        <div class="col-xl-12 col-lg-12">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Mese</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <!--<i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>--> <   >
-                                        </a>
-
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- Area Calendario -->
+                        <div class="col-xl-12 col-lg-12 p-0 pt-2">
+                            <div id='calendar'></div>
                         </div>
                     </div>
 

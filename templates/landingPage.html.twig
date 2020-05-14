@@ -34,7 +34,13 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
 
                 <ul class="navbar-nav ml-auto my-2 my-lg-0">
+
+                    {% if login == false %}
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" data-toggle="modal" data-target="#loginModal">Login</a></li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" href="profile/{{ login }}">{{ login }}</a></li>
+                    {% endif %}
+
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
 
 

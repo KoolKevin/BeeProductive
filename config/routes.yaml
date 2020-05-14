@@ -2,5 +2,13 @@
 #    path: /
 #    controller: App\Controller\DefaultController::index
 index:
-    path: /
-    controller: App\Controller\userController::isLogged
+  path: /
+  controller: App\Controller\userController::isLogged
+
+calendarioUtente:
+  path: /profile/calendar/{username}
+  controller: App\Controller\mainController::generaPaginaUtente
+
+listaEventiUtente:
+  path: /profile/eventList/{username}
+  controller: App\Controller\mainController::generaListaEventi
