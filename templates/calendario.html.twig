@@ -1,56 +1,65 @@
 {% extends 'base.html.twig'%}
 
 {% block stylesheets %}
-<link href="{{ asset('fullcalendar/packages/core/main.css') }}" rel='stylesheet' />
-<link href="{{ asset('fullcalendar/packages/daygrid/main.css') }}" rel='stylesheet' />
+  <link href="{{ asset('fullcalendar/packages/core/main.css') }}" rel='stylesheet' />
+  <link href="{{ asset('fullcalendar/packages/daygrid/main.css') }}" rel='stylesheet' />
 {% endblock %}
 
 {% block javascripts %}
+  <script src='{{ asset("fullcalendar/packages/core/main.js") }}'></script>
+  <script src="{{ asset('fullcalendar/packages/daygrid/main.js') }}"></script>
 
-<script src='{{ asset("fullcalendar/packages/core/main.js") }}'></script>
-<script src="{{ asset('fullcalendar/packages/daygrid/main.js') }}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
 
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        plugins: [ 'dayGrid' ],
+        defaultView: 'dayGridMonth',
 
-<script>
+        events: [
+          { // this object will be "parsed" into an Event Object
+            title: 'The Title', // a property!
+            start: '2020-05-01', // a property!
+            end: '2020-05-05' // a property! ** see important note below about 'end' **
+          }
+        ],
 
-  document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
+        eventColor: '#378006',
+        eventTextColor: '#ffffff',
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      plugins: [ 'dayGrid' ],
-      defaultView: 'dayGridMonth',
-      header: {
-        left:   'addEventButton',
-        center: 'title',
-        right:  'today prev,next'
-      },
-      customButtons: {
-        addEventButton: {
-          text: 'add event...',
-          click: function() {
-            var dateStr = prompt('Enter a date in YYYY-MM-DD format');
-            var date = new Date(dateStr + 'T00:00:00'); // will be in local time
+        header: {
+          left:   'addEventButton',
+          center: 'title',
+          right:  'today prev,next'
+        },
 
-            if (!isNaN(date.valueOf())) { // valid?
-              calendar.addEvent({
-                title: 'dynamic event',
-                start: date,
-                allDay: true
-              });
-              alert('Great. Now, update your database...');
-            } else {
-              alert('Invalid date.');
+        customButtons: {
+          addEventButton: {
+            text: 'inserisci un evento',
+
+            click: function() {
+              var dateStr = prompt('inserisci un evento in questo formato YYYY-MM-DD');
+              var date = new Date(dateStr + 'T00:00:00'); // will be in local time
+
+              if (!isNaN(date.valueOf())) { // valid?
+                calendar.addEvent({
+                  title: 'dynamic event',
+                  start: date,
+                  allDay: true
+                });
+                alert('Great. Now, update your database...');
+              } else {
+                alert('Invalid date.');
+              }
             }
           }
-        }
-      }
+        },
+      });
+
+      calendar.render();
     });
-
-    calendar.render();
-  });
-
-</script>
-
+  </script>
 {% endblock %}
 
 {% block body %}
@@ -60,12 +69,7 @@
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
-
-
-
-
                 <div class="container-fluid ">
-
                     <div class="row">
                         <!-- Area Calendario -->
                         <div class="col-xl-12 col-lg-12 p-0 pt-2">

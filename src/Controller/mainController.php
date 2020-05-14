@@ -35,13 +35,6 @@ use Doctrine\ORM\EntityManagerInterface;
         }
 
         /**
-        * @Route("/calendario")
-        */
-        public function calendario() {
-            return $this->render('calendario.html.twig');
-        }
-
-        /**
         * @Route("/test")
         */
         public function test() {
