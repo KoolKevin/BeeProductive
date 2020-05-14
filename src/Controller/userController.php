@@ -102,7 +102,7 @@ use Doctrine\ORM\EntityManagerInterface;
               $this->session->set('login',$user->getUsername());
 
               //redirect to index
-              return $this->redirectToRoute("index");
+              return $this->redirectToRoute("index", array('username' => $user->getUsername()));
             }
             else {
               //render not logged with error
