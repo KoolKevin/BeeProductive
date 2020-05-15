@@ -5,6 +5,10 @@ index:
   path: /
   controller: App\Controller\userController::isLogged
 
+salvaEvento:
+  path: /salvaEvento
+  controller: App\Controller\eventController::salvaEvento
+
 calendarioUtente:
   path: /profile/calendar/{username}
   controller: App\Controller\mainController::generaPaginaUtente

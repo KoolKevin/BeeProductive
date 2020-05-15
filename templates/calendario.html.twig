@@ -59,16 +59,21 @@
               var date = new Date(dateStr + 'T00:00:00'); // will be in local time
 
               if (!isNaN(date.valueOf())) { // valid?
-                calendar.addEvent({
-                  title: 'dynamic event',
-                  start: date,
-                  allDay: true
+                var ev = {
+                            title: 'dynamic event',
+                            start: date,
+                            allDay: true
+                         };
+                calendar.addEvent( ev );
+
+                //manda alla route per salvare il nuovo evento nel db
+                $.ajax({
+                  url: "/BeeProductive/public/salvaEvento",
+                  data: JSON.stringify(ev)
                 });
-
-                .ajax(){
-
-                };
-              } else {
+                  
+              } 
+              else {
                 alert('Invalid date.');
               }
             }

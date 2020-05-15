@@ -106,7 +106,7 @@ use Doctrine\ORM\EntityManagerInterface;
             }
             else {
               //render not logged with error
-              return $this->render('landingPage.html.twig', array('registrazione' => 'errore') );
+              return $this->render('landingPage.html.twig', array('login' => false) );
             }
           }
         }
