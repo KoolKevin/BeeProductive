@@ -1,6 +1,6 @@
 {% block sidebar %}
     <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion bg-bees" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
@@ -18,7 +18,7 @@
       {%if sidebar.calendar %}
         active
       {% endif %}">
-        <a class="nav-link" href="/BeeProductive/public/profile/calendar/{{ login }}">
+        <a class="nav-link" href="/profile/calendar/{{ login }}">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Calendar</span></a>
       </li>
@@ -28,7 +28,7 @@
       {%if sidebar.eventList %}
         active
       {% endif %}">
-        <a class="nav-link" href="/BeeProductive/public/profile/eventList/{{ login }}">
+        <a class="nav-link" href="/profile/eventList/{{ login }}">
           <i class="fas fa-fw fa-chart-area"></i>
           <span>Events List</span></a>
       </li>

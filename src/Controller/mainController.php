@@ -74,7 +74,11 @@ use Doctrine\ORM\EntityManagerInterface;
         */
 
         public function generaListaEventi($username){
-          return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true) ) );
+          $repository = $this->getDoctrine()->getRepository(User::class);
+          $user = $repository->findOneBy(['username' => $username]);
+          $eventi = $user->getEventi();  //fa da solo. ah grazie, se fa da solo allora io non faccio niente.
+
+          return $this->render('eventList.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true), "eventi" => $eventi ) );
         }
 
 
