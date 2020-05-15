@@ -10,23 +10,36 @@
   <script src="{{ asset('fullcalendar/packages/daygrid/main.js') }}"></script>
 
   <script>
+    
+
     document.addEventListener('DOMContentLoaded', function() {
       var calendarEl = document.getElementById('calendar');
-      var listaEventi = JSON.stringify( {{ eventi }} );
+      var listaEventi = document.querySelector('.eventi').dataset.eventi;
 
-      alert(listaEventi);
-      
+      //roba a mano per togliere la virgola di troppa alla fine della json string, se non lo faccio non mi parsa
+      String.prototype.replaceAt = function(index, replacement) {
+        return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+      }
+
+      var i;
+      var listaEventiUtilizzabile = "";
+      for( i = listaEventi.length; i > 0; i--) {
+        if( listaEventi.charAt(i) == "," ) {
+          listaEventiUtilizzabile = listaEventi.replaceAt( i, " ");
+          
+          break;
+        }
+      }
+
+      //roba calendario
+      //console.log( JSON.parse(listaEventiUtilizzabile) );
+      listaEventi = JSON.parse(listaEventiUtilizzabile);
+
       var calendar = new FullCalendar.Calendar(calendarEl, {
         plugins: [ 'dayGrid' ],
         defaultView: 'dayGridMonth',
 
-        events: [
-          { 
-            title: 'ciao', // a property!
-            start: '2020-05-01', // a property!
-            end: '2020-05-25' // a property! ** see important note below about 'end' **
-          }
-        ],
+        events: listaEventi,
 
         eventColor: '#FDD017',
         eventTextColor: '#413839',
@@ -51,7 +64,10 @@
                   start: date,
                   allDay: true
                 });
-                alert('Great. Now, update your database...');
+
+                .ajax(){
+
+                };
               } else {
                 alert('Invalid date.');
               }
@@ -71,13 +87,14 @@
 
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
-            <!--<div class="eventi" data-eventi="{% for evento in eventi %}
-                                                { 
-                                                  title: {{ evento.titolo }}, 
-                                                  start: '2020-05-01', 
-                                                  end: '2020-05-25'
-                                                },
-                                             {% endfor %}">
+            <div class="eventi" data-eventi='[ {% for evento in eventi %}
+             { 
+               "title": "{{ evento.titolo }}",
+               "start": "2020-05-01",
+               "end": "2020-05-25"
+               }, 
+             {% endfor %} ]'>
+
             </div> <!-- serve a passare dati al javascript --> 
             
             <div id="content">

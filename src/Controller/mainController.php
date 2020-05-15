@@ -26,7 +26,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
         }
 
-
         /**
         * @Route("/home")
         */
@@ -49,7 +48,7 @@ use Doctrine\ORM\EntityManagerInterface;
             //$evento->setFkIdProgetto(1);
 
             $evento->setStartDate("0/0/0");
-            $evento->setTitolo("prova");
+            $evento->setTitolo("prova2");
             $evento->setPriorita(1);
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -66,9 +65,8 @@ use Doctrine\ORM\EntityManagerInterface;
           $repository = $this->getDoctrine()->getRepository(User::class);
           $user = $repository->findOneBy(['username' => $username]);
           $eventi = $user->getEventi();  //fa da solo
-          //$eventiJsoned = json_encode( $eventi ); i result set delle queary a quanto pare non vengono trasformati bene
 
-          return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "eventi" => $eventiJsoned ) );
+          return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "eventi" => $eventi ) );
         }
 
         /**
