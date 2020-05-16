@@ -17,7 +17,21 @@
         {% block stylesheets %}
 
         {% endblock %}
-        
+
+        <style>
+          .bg-gradient-primary{
+            background: linear-gradient(to bottom, rgba(92, 77, 66, 0.8) 0%, rgba(92, 77, 66, 0.8) 100%), url("{{ asset('img/bees3.png') }}");background-size:cover
+          }
+
+          .bees{
+            color: #e8b92c;
+          }
+
+          .bg-bees{
+            background-color: #f5c536 !important;
+          }
+        </style>
+
         {% block javascripts %}
 
         {% endblock %}

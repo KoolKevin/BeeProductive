@@ -1,0 +1,50 @@
+{% extends 'base.html.twig'%}
+
+{% block stylesheets %}
+
+  <style>
+
+  </style>
+
+{% endblock %}
+
+{% block javascripts %}
+
+  <script>
+
+  </script>
+
+{% endblock %}
+
+{% block body %}
+    <div id="wrapper">
+        {{ include('robaDaIncludere/sidebar.html.twig') }}
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                <div class="container-fluid ">
+                    <div class="row">
+                        <!-- Area Calendario -->
+                        <div class="col-xl-12 col-lg-12 p-0 pt-2">
+                          <h3 class="mt-2 bees" >Your Events:</h3>
+                          {% for evento in eventi %}
+                          <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                              <h6 class="m-0 font-weight-bold bees">{{ evento.titolo }}</h6>
+                            </div>
+                            <div class="card-body">
+                              WIP
+                            </div>
+                          </div>
+                          {% else %}
+                          <p>Fun fact: bees are NOT lazy, they always have something to do. What about you?</p>
+                          {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
