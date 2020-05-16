@@ -26,7 +26,7 @@ use Doctrine\ORM\EntityManagerInterface;
         /**
         * @Route("/salvaEvento", methods={"GET, POST"}, name="loadUserPage")
         */
-        public function salvaEvento( Request $request ){
+        public function salvaEvento( Request $request ) {
             $repository = $this->getDoctrine()->getRepository(User::class);
             $user = $repository->findOneByUsername( 'koolkevin' );
 
