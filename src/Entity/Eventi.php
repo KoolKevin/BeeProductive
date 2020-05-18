@@ -24,12 +24,12 @@ class Eventi
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Progetti", inversedBy="eventi")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $fk_id_progetto;
 
     /**
-     * @ORM\Column(type="object")
+     * @ORM\Column(type="string", length=30)
      */
     private $startDate;
 
@@ -42,6 +42,16 @@ class Eventi
      * @ORM\Column(type="integer")
      */
     private $priorita;
+
+    /**
+     * @ORM\Column(type="string", length=30)
+     */
+    private $end_date;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $completato;
 
     public function getId(): ?int
     {
@@ -104,6 +114,30 @@ class Eventi
     public function setPriorita(int $priorita): self
     {
         $this->priorita = $priorita;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?string
+    {
+        return $this->end_date;
+    }
+
+    public function setEndDate(string $end_date): self
+    {
+        $this->end_date = $end_date;
+
+        return $this;
+    }
+
+    public function getCompletato(): ?bool
+    {
+        return $this->completato;
+    }
+
+    public function setCompletato(bool $completato): self
+    {
+        $this->completato = $completato;
 
         return $this;
     }

@@ -15,25 +15,33 @@
     document.addEventListener('DOMContentLoaded', function() {
       var calendarEl = document.getElementById('calendar');
       var listaEventi = document.querySelector('.eventi').dataset.eventi;
+      var vuoto = true;
 
-      //roba a mano per togliere la virgola di troppa alla fine della json string, se non lo faccio non mi parsa
-      String.prototype.replaceAt = function(index, replacement) {
-        return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+      if( listaEventi == "[  ]" ) {
+        vuoto = true;
+        listaEventi = "";
       }
-
-      var i;
-      var listaEventiUtilizzabile = "";
-      for( i = listaEventi.length; i > 0; i--) {
-        if( listaEventi.charAt(i) == "," ) {
-          listaEventiUtilizzabile = listaEventi.replaceAt( i, " ");
-          
-          break;
+      else {
+        vuoto = false;
+        //roba a mano per togliere la virgola di troppa alla fine della json string, se non lo faccio non mi parsa
+        String.prototype.replaceAt = function(index, replacement) {
+          return this.substr(0, index) + replacement + this.substr(index + replacement.length);
         }
-      }
 
-      //roba calendario
-      //console.log( JSON.parse(listaEventiUtilizzabile) );
-      listaEventi = JSON.parse(listaEventiUtilizzabile);
+        var i;
+        var listaEventiUtilizzabile = "";
+        for( i = listaEventi.length; i > 0; i--) {
+          if( listaEventi.charAt(i) == "," ) {
+            listaEventiUtilizzabile = listaEventi.replaceAt( i, " ");
+            
+            break;
+          }
+        }
+
+        //roba calendario
+        //console.log( JSON.parse(listaEventiUtilizzabile) );
+        listaEventi = JSON.parse(listaEventiUtilizzabile);
+      }
 
       var calendar = new FullCalendar.Calendar(calendarEl, {
         plugins: [ 'dayGrid' ],
@@ -64,13 +72,19 @@
                             start: date,
                             allDay: true
                          };
+
                 calendar.addEvent( ev );
 
+                ev = JSON.stringify( ev );
+                alert(ev);
+
                 //manda alla route per salvare il nuovo evento nel db
-                $.ajax({
-                  url: "/BeeProductive/public/salvaEvento",
-                  data: JSON.stringify(ev)
+                $.post("/BeeProductive/public/salvaEvento", {
+                    "data": ev
+                }, function(data) {
+                    alert(data);
                 });
+
                   
               } 
               else {

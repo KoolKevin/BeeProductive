@@ -27,28 +27,35 @@ use Doctrine\ORM\EntityManagerInterface;
         * @Route("/salvaEvento", methods={"GET, POST"}, name="loadUserPage")
         */
         public function salvaEvento( Request $request ) {
-            $repository = $this->getDoctrine()->getRepository(User::class);
-            $user = $repository->findOneByUsername( 'koolkevin' );
+            if( $request->get('data') && $this->session->get('login') ) {
+                $data = $request->get('data');
+                $data = json_decode($data);
 
-            $repository = $this->getDoctrine()->getRepository(Progetti::class);
-            $progetto = $repository->find(1);   //sarebbe da passare nei dati della request, lo setto arbitrariamente per adesso
+                $evento = new Eventi();
 
-            $data = $request->get('data');
-            $dataUtilizzabile = json_encode();
+                $user = $this->getDoctrine()->getRepository(User::class)->findOneByUsername( $this->session->get('login') );
+                $progetto = $this->getDoctrine()->getRepository(Progetti::class)->find(1); //sarebbe da passare nei dati della request, lo setto arbitrariamente per adesso
 
-            $evento = new Eventi();
-            $evento->setFkIdUtente( $user ); 
-            $evento->setFkIdUtente( $progetto ); 
+                $evento->setFkIdUtente($user);
+                $evento->setFkIdProgetto($progetto);
 
-            $evento->setStartDate( 's:5:"0/0/0";' ); 
-            $evento->setTitolo( 'test' ); 
-            $evento->setPriorita( 1 );  //anche questa da passare nella request
+                $evento->setStartDate("0/0/0");
+                $evento->setEndDate("0/0/0");
+                $evento->setTitolo($data->title);
+                $evento->setPriorita(1); //anche questa da passare nella request
+                $evento->setCompletato(false);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($evento);
-            $entityManager->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($evento);
+                $entityManager->flush();
 
-            return $this->render('landingPage.html.twig', array('login' => $data) );
+                return new Response( "success" );
+            }
+            else {
+                return $this->redirectToRoute("index", array("errore" => "non sei loggato, oppure i dati non sono stati inseriti nel modo corretto"));   
+            }
+            
+            
         }
 
     }

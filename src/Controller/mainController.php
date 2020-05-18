@@ -44,8 +44,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
             $evento->setFkIdUtente($user);
             $evento->setFkIdProgetto($progetto);
-            //$evento->setFkIdUtente(1);
-            //$evento->setFkIdProgetto(1);
 
             $evento->setStartDate("0/0/0");
             $evento->setTitolo("prova2");
@@ -62,11 +60,17 @@ use Doctrine\ORM\EntityManagerInterface;
         * @Route("/profile/calendar/{username}", methods={"GET"}, name="loadUserPage")
         */
         public function generaPaginaUtente($username){
-          $repository = $this->getDoctrine()->getRepository(User::class);
-          $user = $repository->findOneBy(['username' => $username]);
-          $eventi = $user->getEventi();  //fa da solo
+          if($this->session->get('login')) {
+            $repository = $this->getDoctrine()->getRepository(User::class);
+            $user = $repository->findOneBy(['username' => $username]);
+            $eventi = $user->getEventi();  //fa da solo
 
-          return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "eventi" => $eventi ) );
+            return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "eventi" => $eventi ) );
+          }
+          else {
+            return $this->redirectToRoute("index", array("errore" => "devi essere loggato per accedere a questa pagina"));
+          }
+          
         }
 
         /**
@@ -74,11 +78,16 @@ use Doctrine\ORM\EntityManagerInterface;
         */
 
         public function generaListaEventi($username){
-          $repository = $this->getDoctrine()->getRepository(User::class);
-          $user = $repository->findOneBy(['username' => $username]);
-          $eventi = $user->getEventi();  //fa da solo. ah grazie, se fa da solo allora io non faccio niente.
+          if($this->session->get('login')) {
+            $repository = $this->getDoctrine()->getRepository(User::class);
+            $user = $repository->findOneBy(['username' => $username]);
+            $eventi = $user->getEventi();  //fa da solo. ah grazie, se fa da solo allora io non faccio niente.
 
-          return $this->render('eventList.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true), "eventi" => $eventi ) );
+            return $this->render('eventList.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true), "eventi" => $eventi ) );
+          }
+          else {
+            return $this->redirectToRoute("index", array("errore" => "devi essere loggato per accedere a questa pagina"));
+          }
         }
 
 
