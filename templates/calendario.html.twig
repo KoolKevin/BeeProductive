@@ -63,8 +63,9 @@
             text: 'inserisci un evento',
 
             click: function() {
-              var dateStr = prompt('inserisci un evento in questo formato YYYY-MM-DD');
-              var date = new Date(dateStr + 'T00:00:00'); // will be in local time
+              $('#inserimentoEventoModal').modal('show');
+              //var dateStr = prompt('inserisci un evento in questo formato YYYY-MM-DD');
+              //var date = new Date(dateStr + 'T00:00:00'); //sintassi per trasformarla in oggetto che piace al calendario
 
               if (!isNaN(date.valueOf())) { // valid?
                 var ev = {
@@ -84,8 +85,6 @@
                 }, function(data) {
                     alert(data);
                 });
-
-                  
               } 
               else {
                 alert('Invalid date.');
@@ -102,31 +101,98 @@
 
 {% block body %}
     <div id="wrapper">
-        {{ include('robaDaIncludere/sidebar.html.twig') }}
+      {{ include('robaDaIncludere/sidebar.html.twig') }}
 
-        <div id="content-wrapper" class="d-flex flex-column">
-            <!-- Main Content -->
-            <div class="eventi" data-eventi='[ {% for evento in eventi %}
-             { 
-               "title": "{{ evento.titolo }}",
-               "start": "2020-05-01",
-               "end": "2020-05-25"
-               }, 
-             {% endfor %} ]'>
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- modal inserimento evento -->
+        <div class="modal fade" id="inserimentoEventoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Login</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
 
-            </div> <!-- serve a passare dati al javascript --> 
-            
-            <div id="content">
-                <div class="container-fluid ">
-                    <div class="row">
-                        <!-- Area Calendario -->
-                        <div class="col-xl-12 col-lg-12 p-0 pt-2">
-                            <div id='calendar'></div>
+              <div class="modal-body">
+                <div class="container">
+                  <div class="row">
+                    <div class="col">
+                      <form action="login" method="POST">
+                        <div class="form-group">
+                          <label for="titolo"> Titolo Evento </label>
+                          <input type="text" class="form-control" name="titolo">
                         </div>
-                    </div>
+                        
+                        <div class="form-group">
+                          <label for="dataInizio"> Data inizio </label>
+                          <input type="text" class="form-control" name="dataInizio" placeholder="yyyy-mm-dd">
+                        </div>
 
+                        <div class="form-group">
+                          <label for="dataFine"> Data fine </label>
+                          <input type="text" class="form-control" name="dataFine" placeholder="yyyy-mm-dd">
+                        </div>
+
+                        <div class="form-group">
+                          <label for="priorita">Selezione il livello di priorità</label>
+
+                          <select name="priorita">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                          </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="progetto"> Nome progetto padre </label>
+                          <input type="text" class="form-control" name="progetto" placeholder="opzionale">
+                        </div>
+                        
+                        <div class="container mt-4 mb-1">
+                          <div class="row">
+                            <div class="col text-center">
+                              <button type="submit" class="btn btn-primary align-self-center">Login</button>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              <div class="modal-footer" style="justify-content:left !important">
+                <p>INSERIAML</p>
+              </div>
             </div>
+          </div>
         </div>
+
+
+        <!-- Main Content -->
+        <div class="eventi" data-eventi='[ {% for evento in eventi %}
+          { 
+            "title": "{{ evento.titolo }}",
+            "start": "2020-05-01",
+            "end": "2020-05-25"
+            }, 
+          {% endfor %} ]'>
+        </div> <!-- serve a passare dati al javascript --> 
+        
+        <div id="content">
+          <div class="container-fluid ">
+              <div class="row">
+                  <!-- Area Calendario -->
+                  <div class="col-xl-12 col-lg-12 p-0 pt-2">
+                    <div id='calendar'></div>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 {% endblock %}
