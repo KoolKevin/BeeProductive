@@ -34,16 +34,18 @@ use Doctrine\ORM\EntityManagerInterface;
                 $evento = new Eventi();
 
                 $user = $this->getDoctrine()->getRepository(User::class)->findOneByUsername( $this->session->get('login') );
-                $progetto = $this->getDoctrine()->getRepository(Progetti::class)->find(1); //sarebbe da passare nei dati della request, lo setto arbitrariamente per adesso
-
                 $evento->setFkIdUtente($user);
-                $evento->setFkIdProgetto($progetto);
-
-                $evento->setStartDate("0/0/0");
-                $evento->setEndDate("0/0/0");
+                
+                if( !empty( $data->prog ) ) {
+                    $progetto = $this->getDoctrine()->getRepository(Progetti::class)->findOneBy(['titolo' => $data->prog]);
+                    $evento->setFkIdProgetto($progetto);
+                }
+                
+                $evento->setStartDate($data->start);
+                $evento->setEndDate($data->end);
                 $evento->setTitolo($data->title);
-                $evento->setPriorita(1); //anche questa da passare nella request
-                $evento->setCompletato(false);
+                $evento->setPriorita($data->pri); //anche questa da passare nella request
+                $evento->setCompletato(false); //false di default
 
                 $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->persist($evento);

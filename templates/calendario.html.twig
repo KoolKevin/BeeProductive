@@ -41,8 +41,9 @@
         //roba calendario
         //console.log( JSON.parse(listaEventiUtilizzabile) );
         listaEventi = JSON.parse(listaEventiUtilizzabile);
-      }
+      }   
 
+      //render calendario
       var calendar = new FullCalendar.Calendar(calendarEl, {
         plugins: [ 'dayGrid' ],
         defaultView: 'dayGridMonth',
@@ -67,28 +68,48 @@
               //var dateStr = prompt('inserisci un evento in questo formato YYYY-MM-DD');
               //var date = new Date(dateStr + 'T00:00:00'); //sintassi per trasformarla in oggetto che piace al calendario
 
-              if (!isNaN(date.valueOf())) { // valid?
-                var ev = {
-                            title: 'dynamic event',
-                            start: date,
-                            allDay: true
-                         };
+              $("#carica").click(function() {
+                var titolo = $("input[name=titolo]").val();
+                var dataInizio = $("input[name=dataInizio]").val();
+                var dataFine = $("input[name=dataFine]").val();
+                var priorita = $("select[name=priorita]").val();
+                var progetto =  $("input[name=progetto]").val();
 
-                calendar.addEvent( ev );
+                console.log( titolo );
+                console.log( dataInizio );
+                console.log( dataFine );
+                console.log( priorita );
+                console.log( progetto );
 
-                ev = JSON.stringify( ev );
-                alert(ev);
+                if ( dataInizio ) { // valid?
+                  var ev = {
+                              title: titolo,
+                              start: dataInizio,
+                              end: dataFine,
+                              pri: priorita,
+                              prog: progetto,
+                              allDay: true
+                          };
 
-                //manda alla route per salvare il nuovo evento nel db
-                $.post("/BeeProductive/public/salvaEvento", {
-                    "data": ev
-                }, function(data) {
-                    alert(data);
-                });
-              } 
-              else {
-                alert('Invalid date.');
-              }
+                  calendar.addEvent( ev );
+
+                  ev = JSON.stringify( ev );
+
+                  //manda alla route per salvare il nuovo evento nel db
+                  $.post("/BeeProductive/public/salvaEvento", {
+                      "data": ev
+                  }, function(data) {
+                      alert(data);
+                  });
+                } 
+                else {
+                  alert('Invalid date.');
+                }
+
+                //eventuale controllo sui campi che non ho voglia di fare va qua
+                $('#inserimentoEventoModal').modal('hide');
+              });
+              
             }
           }
         },
@@ -109,7 +130,7 @@
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Login</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Aggiungi evento!</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               </div>
 
@@ -117,7 +138,7 @@
                 <div class="container">
                   <div class="row">
                     <div class="col">
-                      <form action="login" method="POST">
+                      <form>
                         <div class="form-group">
                           <label for="titolo"> Titolo Evento </label>
                           <input type="text" class="form-control" name="titolo">
@@ -153,7 +174,7 @@
                         <div class="container mt-4 mb-1">
                           <div class="row">
                             <div class="col text-center">
-                              <button type="submit" class="btn btn-primary align-self-center">Login</button>
+                              <button id="carica" type="button" class="btn btn-primary align-self-center">Carica</button>
                             </div>
                           </div>
                         </div>
@@ -164,7 +185,7 @@
               </div>
 
               <div class="modal-footer" style="justify-content:left !important">
-                <p>INSERIAML</p>
+                <p>Aggiungiaml</p>
               </div>
             </div>
           </div>
