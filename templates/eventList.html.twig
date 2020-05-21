@@ -3,7 +3,28 @@
 {% block stylesheets %}
 
   <style>
+    .mad{
+      position: relative;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      width: 270px;
+      padding: 0 15px 0 0;
+    }
 
+    .cssbad{
+      flex-grow: 1;
+      display:flex;
+      transition: linear .3s;
+      display: flex;
+      flex-wrap: nowrap;
+      align-content: flex-start;
+      justify-content: flex-start;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    /*assolutamente NON copiato da clickup*/
   </style>
 
 {% endblock %}
@@ -26,20 +47,44 @@
                 <div class="container-fluid ">
                     <div class="row">
                         <!-- Area Calendario -->
-                        <div class="col-xl-12 col-lg-12 p-0 pt-2">
+                        <div class="col-12 p-0 pt-2">
                           <h3 class="mt-2 bees" >Your Events:</h3>
-                          {% for evento in eventi %}
-                          <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                              <h6 class="m-0 font-weight-bold bees">{{ evento.titolo }}</h6>
+                          <div class="cssbad">
+                          {% set trentaeuro = 1 %}
+                          {% for priorita in eventi %}
+
+
+
+                          <div class="mad">
+                            <div class="card shadow">
+                              <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold bees">Prio{{ trentaeuro }}</h6>
+                              </div>
+                              <div class="card-body">
+                                WIP
+                              </div>
                             </div>
-                            <div class="card-body">
-                              WIP
-                            </div>
+
+
+                            {% for evento in priorita %}
+                              <div class="card shadow">
+                                <div class="card-header py-3">
+                                  <h6 class="m-0 font-weight-bold bees">{{ evento.titolo }}</h6>
+                                </div>
+                                <div class="card-body">
+                                  WIP
+                                </div>
+                              </div>
+                            {% endfor %}
                           </div>
+
+                          {% set trentaeuro = trentaeuro + 1 %}
+
                           {% else %}
                           <p>Fun fact: bees are NOT lazy, they always have something to do. What about you?</p>
                           {% endfor %}
+
+                          </div>
                         </div>
                     </div>
 

@@ -16,13 +16,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Doctrine\ORM\EntityManagerInterface;
 
+use Psr\Log\LoggerInterface;
+
     class mainController extends AbstractController{
 
         private $session;
 
-        public function __construct(SessionInterface $session){
+        private $logger;
+
+        public function __construct(SessionInterface $session, LoggerInterface $logger){
 
             $this->session = $session;
+
+            $this->logger = $logger;
 
         }
 
@@ -70,20 +76,42 @@ use Doctrine\ORM\EntityManagerInterface;
           else {
             return $this->redirectToRoute("index", array("errore" => "devi essere loggato per accedere a questa pagina"));
           }
-          
+
         }
 
         /**
-        * @Route("/profile/eventList/{username}", methods={"GET"}, name="loadUserPage")
+        * @Route("/profile/eventList/{username}", methods={"GET"}, name="loadEventPage")
         */
 
         public function generaListaEventi($username){
           if($this->session->get('login')) {
             $repository = $this->getDoctrine()->getRepository(User::class);
             $user = $repository->findOneBy(['username' => $username]);
-            $eventi = $user->getEventi();  //fa da solo. ah grazie, se fa da solo allora io non faccio niente.
+            $eventi = $repository->getEventiUtenteConPriorita($user->getId());
 
-            return $this->render('eventList.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true), "eventi" => $eventi ) );
+            $eventiPrio = [];
+            $i = 1;
+            $eventiPrio[1] = [];
+
+            $this->logger->debug(json_encode($eventi[0]));
+
+            for($fuckyou = 0 ; $fuckyou < count($eventi) ;) {
+              $this->logger->debug($eventi[$fuckyou]["priorita"]);
+              if($eventi[$fuckyou]["priorita"] == $i){
+                array_push($eventiPrio[$i], $eventi[$fuckyou]);
+                $fuckyou++;
+              } else {
+                $i++;
+                $eventiPrio[$i] = [];
+              }
+            }
+
+            //$this->logger->debug(json_encode($eventiPrio[1]["prio"]));
+
+
+            $this->logger->critical("bruh");
+
+            return $this->render('eventList.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true), "eventi" => $eventiPrio ) );
           }
           else {
             return $this->redirectToRoute("index", array("errore" => "devi essere loggato per accedere a questa pagina"));
