@@ -3,6 +3,7 @@
 {% block stylesheets %}
   <link href="{{ asset('fullcalendar/packages/core/main.css') }}" rel='stylesheet' />
   <link href="{{ asset('fullcalendar/packages/daygrid/main.css') }}" rel='stylesheet' />
+  <link href="{{ asset('fullcalendar/packages/interaction/main.js') }}" rel='stylesheet' />
 {% endblock %}
 
 {% block javascripts %}
@@ -43,9 +44,14 @@
         listaEventi = JSON.parse(listaEventiUtilizzabile);
       }   
 
+      var draggableEl = document.getElementById('myDraggable');
+
       //render calendario
       var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: [ 'dayGrid' ],
+        plugins: [ 'dayGrid', 'interactionPlugin' ],
+
+        droppable: true,
+
         defaultView: 'dayGridMonth',
 
         events: listaEventi,
@@ -75,12 +81,6 @@
                 var priorita = $("select[name=priorita]").val();
                 var progetto =  $("input[name=progetto]").val();
 
-                console.log( titolo );
-                console.log( dataInizio );
-                console.log( dataFine );
-                console.log( priorita );
-                console.log( progetto );
-
                 if ( dataInizio ) { // valid?
                   var ev = {
                               title: titolo,
@@ -92,6 +92,7 @@
                           };
 
                   calendar.addEvent( ev );
+                  console.log( ev );
 
                   ev = JSON.stringify( ev );
 
@@ -108,6 +109,7 @@
 
                 //eventuale controllo sui campi che non ho voglia di fare va qua
                 $('#inserimentoEventoModal').modal('hide');
+                exit(); //EZ fix serve a terminare lo script cosi non raddoppio l'aggiungimento di eventi
               });
               
             }
@@ -196,12 +198,14 @@
         <div class="eventi" data-eventi='[ {% for evento in eventi %}
           { 
             "title": "{{ evento.titolo }}",
-            "start": "2020-05-01",
-            "end": "2020-05-25"
+            "start": "{{ evento.startDate}}",
+            "end": "{{ evento.endDate }}"
             }, 
           {% endfor %} ]'>
         </div> <!-- serve a passare dati al javascript --> 
-        
+
+        <div class="myDraggable"> ciao </div>
+
         <div id="content">
           <div class="container-fluid ">
               <div class="row">
