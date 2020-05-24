@@ -56,8 +56,26 @@ use Doctrine\ORM\EntityManagerInterface;
             else {
                 return $this->redirectToRoute("index", array("errore" => "non sei loggato, oppure i dati non sono stati inseriti nel modo corretto"));   
             }
-            
-            
         }
+        
+        /**
+        * @Route("/eliminaEvento")
+        */
+        public function getNextId( Request $request )
+        {   
+            $id = intval( $request->get('id') );
 
+            $entityManager = $this->getDoctrine()->getManager();
+            $evento = $entityManager->getRepository(Eventi::class)->find($id);
+
+            if (!$evento) {
+                return new Response( "evento con l'id di:". $id . " non è stato trovato" );
+            }
+
+            $entityManager->remove($evento);
+            $entityManager->flush();
+
+            return new Response( "evento con l'id di:". $id . " è stato rimosso!" );
+        }
+        
     }

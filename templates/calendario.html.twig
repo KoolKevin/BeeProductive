@@ -3,27 +3,24 @@
 {% block stylesheets %}
   <link href="{{ asset('fullcalendar/packages/core/main.css') }}" rel='stylesheet' />
   <link href="{{ asset('fullcalendar/packages/daygrid/main.css') }}" rel='stylesheet' />
-  <link href="{{ asset('fullcalendar/packages/interaction/main.js') }}" rel='stylesheet' />
 {% endblock %}
 
 {% block javascripts %}
   <script src='{{ asset("fullcalendar/packages/core/main.js") }}'></script>
   <script src="{{ asset('fullcalendar/packages/daygrid/main.js') }}"></script>
+  <script src="{{ asset('fullcalendar/packages/interaction/main.js') }}"></script>
 
   <script>
-    
-
     document.addEventListener('DOMContentLoaded', function() {
       var calendarEl = document.getElementById('calendar');
+      var bidoneEl = document.getElementById('bidone');
+
       var listaEventi = document.querySelector('.eventi').dataset.eventi;
-      var vuoto = true;
 
       if( listaEventi == "[  ]" ) {
-        vuoto = true;
         listaEventi = "";
       }
       else {
-        vuoto = false;
         //roba a mano per togliere la virgola di troppa alla fine della json string, se non lo faccio non mi parsa
         String.prototype.replaceAt = function(index, replacement) {
           return this.substr(0, index) + replacement + this.substr(index + replacement.length);
@@ -40,17 +37,29 @@
         }
 
         //roba calendario
-        //console.log( JSON.parse(listaEventiUtilizzabile) );
         listaEventi = JSON.parse(listaEventiUtilizzabile);
       }   
 
-      var draggableEl = document.getElementById('myDraggable');
+      //roba per drag and drop
+      var Draggable = FullCalendarInteraction.Draggable;
+      var containerEl = document.getElementById('external-events');
+      var checkbox = document.getElementById('drop-remove');
 
+      new Draggable(containerEl, {
+        itemSelector: '.fc-event',
+        eventData: function(eventEl) {
+          return {
+            title: eventEl.innerText
+          };
+        }
+      });
+      
       //render calendario
       var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: [ 'dayGrid', 'interactionPlugin' ],
+        plugins: [ 'dayGrid', 'interaction' ],
 
         droppable: true,
+        editable: true,
 
         defaultView: 'dayGridMonth',
 
@@ -65,14 +74,13 @@
           right:  'today prev,next'
         },
 
+        //bottone per inserimento eventi
         customButtons: {
           addEventButton: {
             text: 'inserisci un evento',
 
             click: function() {
               $('#inserimentoEventoModal').modal('show');
-              //var dateStr = prompt('inserisci un evento in questo formato YYYY-MM-DD');
-              //var date = new Date(dateStr + 'T00:00:00'); //sintassi per trasformarla in oggetto che piace al calendario
 
               $("#carica").click(function() {
                 var titolo = $("input[name=titolo]").val();
@@ -117,7 +125,26 @@
         },
       });
 
+      var bidone = new FullCalendar.Calendar(bidoneEl, {
+        plugins: [ 'interaction', 'dayGrid' ],
+        defaultDate: '2020-05-12',
+        editable: true,
+        droppable: true, // will let it receive events!
+
+        eventReceive: function(info) {
+          console.log('event received!', info.event.id);
+
+          //chiamata che elimina l'evento
+          $.post("/BeeProductive/public/eliminaEvento", {
+              "id": info.event.id
+          }, function(data) {
+              alert(data);
+          });
+        }
+      });
+
       calendar.render();
+      bidone.render();
     });
   </script>
 {% endblock %}
@@ -127,6 +154,30 @@
       {{ include('robaDaIncludere/sidebar.html.twig') }}
 
       <div id="content-wrapper" class="d-flex flex-column">
+        <div class="row">
+          <div class="col-6">
+            <div id='external-events'>
+              <p>
+                <strong>Draggable Events</strong>
+              </p>
+              <div class='fc-event'>My Event 1</div>
+              <div class='fc-event'>My Event 2</div>
+              <div class='fc-event'>My Event 3</div>
+              <div class='fc-event'>My Event 4</div>
+              <div class='fc-event'>My Event 5</div>
+              <div class="fc-event"> ciao </div>
+              <p>
+                <input type='checkbox' id='drop-remove' />
+                <label for='drop-remove'>remove after drop</label>
+              </p>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div id='bidone'></div>
+          </div>
+        </div>
+
         <!-- modal inserimento evento -->
         <div class="modal fade" id="inserimentoEventoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
@@ -197,14 +248,13 @@
         <!-- Main Content -->
         <div class="eventi" data-eventi='[ {% for evento in eventi %}
           { 
+            "id": "{{ evento.id }}",
             "title": "{{ evento.titolo }}",
             "start": "{{ evento.startDate}}",
             "end": "{{ evento.endDate }}"
             }, 
           {% endfor %} ]'>
         </div> <!-- serve a passare dati al javascript --> 
-
-        <div class="myDraggable"> ciao </div>
 
         <div id="content">
           <div class="container-fluid ">
