@@ -3,7 +3,33 @@
 {% block stylesheets %}
 
   <style>
+    .mad{
+      position: relative;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      width: 270px;
+      padding: 0 15px 0 0;
+      height: 100%;
+    }
 
+    .cssbad{
+      flex-grow: 1;
+      display: flex;
+      transition: linear .3s;
+      display: flex;
+      flex-wrap: nowrap;
+      align-content: flex-start;
+      justify-content: flex-start;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    a{
+      cursor: pointer !important;
+    }
+
+    /*assolutamente NON copiato da clickup*/
   </style>
 
 {% endblock %}
@@ -26,20 +52,51 @@
                 <div class="container-fluid ">
                     <div class="row">
                         <!-- Area Calendario -->
-                        <div class="col-xl-12 col-lg-12 p-0 pt-2">
+                        <div class="col-12 p-0 pt-2">
                           <h3 class="mt-2 bees" >Your Events:</h3>
-                          {% for evento in eventi %}
-                          <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                              <h6 class="m-0 font-weight-bold bees">{{ evento.titolo }}</h6>
+                          <div class="cssbad">
+                          {% set trentaeuro = 1 %}
+                          {% for priorita in eventi %}
+
+
+
+                          <div class="mad">
+                            <div class="card shadow">
+                              <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold bees">Prio{{ trentaeuro }}</h6>
+                              </div>
+                              <div class="card-body">
+                                Eventi di prio {{ trentaeuro }} sotto
+                              </div>
                             </div>
-                            <div class="card-body">
-                              WIP
-                            </div>
+
+
+                            {% for evento in priorita %}
+                              <div class="card shadow mt-2">
+                                <div class="card-header py-3">
+                                  <h6 class="m-0 font-weight-bold bees">{{ evento.titolo }}</h6>
+                                </div>
+                                <div class="card-body">
+                                  <div class="row">
+                                    <div class="col-6 text-center border-right">
+                                      <a data-toggle="modal" data-target="#modificaEvento{{ evento.id }}">Edit</a>
+                                    </div>
+                                    <div class="col-6 text-center border-left">
+                                      <a data-toggle="modal" data-target="#eliminaEvento{{ evento.id }}">Delete</a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            {% endfor %}
                           </div>
+
+                          {% set trentaeuro = trentaeuro + 1 %}
+
                           {% else %}
                           <p>Fun fact: bees are NOT lazy, they always have something to do. What about you?</p>
                           {% endfor %}
+
+                          </div>
                         </div>
                     </div>
 
@@ -47,4 +104,128 @@
             </div>
         </div>
     </div>
+
+
+
+    {% for priorita in eventi %}
+    {% for evento in priorita %}
+    <!-- Modal Modifica Evento {{ evento.id }}-->
+    <div class="modal fade" id="modificaEvento{{ evento.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div class="container">
+
+              <div class="row">
+
+                <div class="col">
+
+                  <form action="/editEvent" method="POST">
+                      <div class="form-group">
+                          <label for="titolo"> Title </label>
+                          <input type="text" class="form-control" name="titolo" value="{{ evento.titolo }}">
+                      </div>
+
+                      <div class="form-group">
+                          <label for="startDate">Start Date</label>
+                          <input type="text" class="form-control" name="startDate" value="{{ evento.start_date }}">
+                      </div>
+
+                      <div class="form-group">
+                          <label for="endDate">End Date</label>
+                          <input type="text" class="form-control" name="endDate" value="{{ evento.end_date }}">
+                      </div>
+
+                      <div class="form-group">
+                          <label for="priorita">Priority</label>
+                          <input type="text" class="form-control" name="priorita" value="{{ evento.priorita}}">
+                      </div>
+
+
+                      <div class="container mt-4 mb-1">
+                        <div class="row">
+                          <div class="col text-center">
+                            <button type="submit" class="btn btn-primary align-self-center">Save</button>
+                          </div>
+                        </div>
+                      </div>
+
+                  </form>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--<div class="modal-footer" style="justify-content:left !important">
+            <p>Already have an account? <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#loginModal">Login NOW!</a></p>
+
+          </div>-->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Elimina Evento {{ evento.id }}-->
+    <div class="modal fade" id="eliminaEvento{{ evento.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Delete</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div class="container">
+
+              <div class="row">
+
+                <div class="col">
+
+                  <form action="/deleteEvent" method="POST">
+
+                    <p>Do you really want to delete the event "{{ evento.titolo }}"? Once you delete it, it will no longer be visible.</p>
+
+                      <div class="form-group">
+                          <input type="hidden" class="form-control" name="id" value="{{ evento.id }}">
+                      </div>
+
+
+                      <div class="container mt-4 mb-1">
+                        <div class="row">
+
+                          <div class="col-6 text-center">
+                            <button type="button" class="btn btn-secondary w-100" data-dismiss="modal">No</button>
+                          </div>
+
+                          <div class="col-6 text-center">
+                            <button type="submit" class="btn btn-primary w-100">Yes</button>
+                          </div>
+
+                        </div>
+                      </div>
+
+                  </form>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--<div class="modal-footer" style="justify-content:left !important">
+            <p>Already have an account? <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#loginModal">Login NOW!</a></p>
+
+          </div>-->
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% endfor %}
+
 {% endblock %}

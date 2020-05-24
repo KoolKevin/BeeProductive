@@ -47,4 +47,35 @@ class UserRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+     * @return Eventi[]
+     */
+    public function getEventiUtenteConPriorita($userId): array
+    {
+        /*$entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT e
+              FROM App\Entity\Eventi e, App\Entity\User u
+              WHERE u.id = e.fk_id_utente, e.fk_id_utente = :userId
+              ORDER BY e.priorita, e.id ASC'
+        )->setParameter('userId', $userId);
+
+        // returns an array of Product objects
+        return $query->getResult();
+*/
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT e.* FROM eventi e, user u
+            WHERE u.id = e.fk_id_utente_id AND e.fk_id_utente_id = :userId
+            ORDER BY e.priorita, e.id ASC
+            ';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['userId' => $userId]);
+
+        // returns an array of arrays (i.e. a raw data set)
+        return $stmt->fetchAll();
+    }
 }
