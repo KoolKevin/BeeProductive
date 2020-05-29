@@ -6,8 +6,7 @@
 
   <style>
     #bidoneSfondo {
-      background-image: url("../../../immagini/bidone.png");
-      background-size: contain;
+      background-color: red;
     }
   </style>
 {% endblock %}
@@ -40,7 +39,6 @@
             break;
           }
         }
-
         //roba calendario
         listaEventi = JSON.parse(listaEventiUtilizzabile);
       }   
@@ -92,16 +90,14 @@
                           };
 
                   calendar.addEvent( ev );
-                  console.log( ev );
 
                   ev = JSON.stringify( ev );
 
                   //manda alla route per salvare il nuovo evento nel db
-                  $.post("/BeeProductive/public/salvaEvento", {
+                  $.post("/salvaEvento", {
                       "data": ev
                   }, function(data) {
                       location.reload(); //mi fa un po' schifo, serve a caricare di nuovo gli eventi cosi hanno l'id anche quelli nuovi
-                      alert(data);
                   });
                 } 
                 else {
@@ -121,20 +117,19 @@
 
       var bidone = new FullCalendar.Calendar(bidoneEl, {
         plugins: [ 'interaction', 'dayGrid' ],
-        defaultDate: '2020-05-12',
+        defaultDate: '2020-04-12',
 
         editable: true,
         droppable: true, // will let it receive events!
 
         header: false,
-        showNonCurrentDates: false,
         fixedWeekCount: false,
 
         eventReceive: function(info) {
           console.log('event received!', info.event.id);
 
           //chiamata che elimina l'evento
-          $.post("/BeeProductive/public/eliminaEvento", {
+          $.post("/eliminaEvento", {
               "id": info.event.id
           }, function(data) {
               location.reload();

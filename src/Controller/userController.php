@@ -16,34 +16,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
 
     class userController extends AbstractController{
-
         private $session;
 
         public function __construct(SessionInterface $session){
-
             $this->session = $session;
-
         }
 
         /**
         * @Route("/", methods={"GET"}, name="index")
         */
         public function isLogged(){
-
           if($this->checkLogin()){
 
             //prendo il colore
             //$userColorHex = $this->checkUserColor($this->session->get("login"));
 
             //pagine con user loggato
-            return $this->render('landingPage.html.twig', array('login' => $this->session->get("login")/*,'color' => $userColorHex*/));
-
-          } else {
+          return $this->render('index.html.twig', array('login' => $this->session->get("login"), "sidebar" => array("calendar" => false, "eventList" => false)/*,'color' => $userColorHex*/));
+          } 
+          else {
             //render not logged template
-
             return $this->render('landingPage.html.twig', array('login' => false));
           }
-
         }
 
        /**
@@ -59,16 +53,15 @@ use Doctrine\ORM\EntityManagerInterface;
             $user->setMail( $request->get('mail') );
             $user->setPassword( md5($request->get('password')) );
 
-            // tell Doctrine you want to (eventually) save the Product
             $entityManager->persist($user);
-
-            // actually executes the queries (i.e. the INSERT query)
             $entityManager->flush();
+            
+            $this->session->set('login', $user->getUsername());
 
-            return $this->render('landingPage.html.twig', array('registrazione' => 'avvenuta') );
+            return $this->redirectToRoute("index");
           }
           else{
-            return $this->render('landingPage.html.twig', array('registrazione' => 'NON avvenuta') );
+            return $this->render('landingPage.html.twig', array('login' => false) );
           }
         }
 
@@ -77,7 +70,7 @@ use Doctrine\ORM\EntityManagerInterface;
         */
         public function setLogin(Request $request) {
           if($this->session->get('login')){
-            return $this->redirectToRoute("index");
+            return $this->render('index.html.twig', array('login' => $this->session->get("login"), "sidebar" => array("calendar" => false, "eventList" => false)/*,'color' => $userColorHex*/));
           }
 
           if($request->get('username',false) && $request->get('password',false)){

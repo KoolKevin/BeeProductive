@@ -33,37 +33,7 @@ use Psr\Log\LoggerInterface;
         }
 
         /**
-        * @Route("/home")
-        */
-        public function home() {
-            return $this->render('index.html.twig');
-        }
-
-        /**
-        * @Route("/test")
-        */
-        public function test() {
-            $evento = new Eventi();
-
-            $user = $this->getDoctrine()->getRepository(User::class)->find(1);
-            $progetto = $this->getDoctrine()->getRepository(Progetti::class)->find(1);
-
-            $evento->setFkIdUtente($user);
-            $evento->setFkIdProgetto($progetto);
-
-            $evento->setStartDate("0/0/0");
-            $evento->setTitolo("prova2");
-            $evento->setPriorita(1);
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($evento);
-            $entityManager->flush();
-
-            return $this->render('index.html.twig');
-        }
-
-        /**
-        * @Route("/profile/calendar/{username}", methods={"GET"}, name="loadUserPage")
+        * @Route("/calendar/{username}", methods={"GET"}, name="loadUserPage")
         */
         public function generaPaginaUtente($username){
           if($this->session->get('login')) {
@@ -80,9 +50,8 @@ use Psr\Log\LoggerInterface;
         }
 
         /**
-        * @Route("/profile/eventList/{username}", methods={"GET"}, name="loadEventPage")
+        * @Route("/eventList/{username}", methods={"GET"}, name="loadEventPage")
         */
-
         public function generaListaEventi($username){
           if($this->session->get('login')) {
             $repository = $this->getDoctrine()->getRepository(User::class);
@@ -107,7 +76,6 @@ use Psr\Log\LoggerInterface;
             }
 
             //$this->logger->debug(json_encode($eventiPrio[1]["prio"]));
-
 
             $this->logger->critical("bruh");
 

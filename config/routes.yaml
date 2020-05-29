@@ -10,9 +10,9 @@ salvaEvento:
   controller: App\Controller\eventController::salvaEvento
 
 calendarioUtente:
-  path: /profile/calendar/{username}
+  path: /calendar/{username}
   controller: App\Controller\mainController::generaPaginaUtente
 
 listaEventiUtente:
-  path: /profile/eventList/{username}
+  path: /eventList/{username}
   controller: App\Controller\mainController::generaListaEventi
