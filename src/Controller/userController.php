@@ -29,10 +29,10 @@ use Doctrine\ORM\EntityManagerInterface;
           if($this->checkLogin()){
 
             //prendo il colore
-            //$userColorHex = $this->checkUserColor($this->session->get("login"));
+            //$userColorHex = $this->checkUserColor($this->session->get('login'));
 
             //pagine con user loggato
-          return $this->render('index.html.twig', array('login' => $this->session->get("login"), "sidebar" => array("calendar" => false, "eventList" => false)/*,'color' => $userColorHex*/));
+            return $this->redirectToRoute("home", array('username' =>  $this->session->get('login') ));
           } 
           else {
             //render not logged template

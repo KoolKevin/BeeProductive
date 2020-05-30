@@ -33,6 +33,145 @@ use Psr\Log\LoggerInterface;
         }
 
         /**
+        * @Route("/test")
+        */
+        public function test( \Swift_Mailer $mailer ){
+          $message = (new Swift_Message()) //non capisco tanto
+            ->setSubject('subject')
+            ->setFrom(['kevinkoltraka1011@gmail.com' => 'Mike Hoxlong'])
+            ->setTo(['akile1011@gmail.come' => 'Mike Litoris'])
+            ->setBody('Here is the message itself')
+            ->addPart('<q>Here is the message itself</q>', 'text/html');
+
+          $mailer->send($message);
+          
+          return new Response('la route funziona!');
+        }
+
+        /**
+        * @Route("/home/{username}", name="home")
+        */
+        public function home($username){
+          $repository = $this->getDoctrine()->getRepository(User::class);
+          $user = $repository->findOneByUsername($username);
+          $eventi = $user->getEventi();
+
+          $oggiGiorno = intval( date("d") );
+          $oggiMeseAnno = date("Y-m");
+
+          $eventiUrgenti = "";
+
+          foreach ($eventi as $evento) {
+            $endDate = $evento->getEndDate();
+            $endDateMeseAnno = substr($endDate, 0, 7); 
+            $endDateGiorno = intval( substr($endDate, 8, 2) ); 
+            
+            if( abs($oggiGiorno - $endDateGiorno) < 6 ) {   //magari facciamo anche un opzione per determinare l'intervallo
+              switch( $evento->getPriorita() ) {
+                case 1: //il coloro lo dovrei prendere facendo una query sulla tabella priorita
+                  $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
+                                    <div class="card border-left-info shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">'. $evento->getTitolo() .'</div>
+                                                    <div class="h5 mb-0 text-gray-800">dovrei mettere un campo descrizione nel db in effetti :/</div>
+                                                </div>
+
+                                                <div class="col-auto">
+                                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>';
+                  break;
+                
+                case 2:
+                  $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
+                                    <div class="card border-left-primary shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">'. $evento->getTitolo() .'</div>
+                                                    <div class="h5 mb-0 text-gray-800">dovrei mettere un campo descrizione nel db in effetti :/</div>
+                                                </div>
+
+                                                <div class="col-auto">
+                                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>';
+                  break;
+
+                case 3:
+                  $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
+                                    <div class="card border-left-success shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">'. $evento->getTitolo() .'</div>
+                                                    <div class="h5 mb-0 text-gray-800">dovrei mettere un campo descrizione nel db in effetti :/</div>
+                                                </div>
+
+                                                <div class="col-auto">
+                                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>';
+                  break;
+
+                case 4:
+                  $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
+                                    <div class="card border-left-warning shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">'. $evento->getTitolo() .'</div>
+                                                    <div class="h5 mb-0 text-gray-800">dovrei mettere un campo descrizione nel db in effetti :/</div>
+                                                </div>
+
+                                                <div class="col-auto">
+                                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>';
+                  break;
+
+                case 5:
+                  $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
+                                    <div class="card border-left-danger shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">'. $evento->getTitolo() .'</div>
+                                                    <div class="h5 mb-0 text-gray-800">dovrei mettere un campo descrizione nel db in effetti :/</div>
+                                                </div>
+
+                                                <div class="col-auto">
+                                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>';
+                  break;
+              }
+            }
+          }
+          
+          
+          return $this->render('index.html.twig', array('login' => $username, 'eventiUrgenti' => $eventiUrgenti, "sidebar" => array("calendar" => false, "eventList" => false)/*,'color' => $userColorHex*/));
+        }
+
+
+        /**
         * @Route("/calendar/{username}", methods={"GET"}, name="loadUserPage")
         */
         public function generaPaginaUtente($username){

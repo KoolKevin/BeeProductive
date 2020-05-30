@@ -16,3 +16,5 @@ calendarioUtente:
 listaEventiUtente:
   path: /eventList/{username}
   controller: App\Controller\mainController::generaListaEventi
+
+
