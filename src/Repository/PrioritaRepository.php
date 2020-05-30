@@ -47,4 +47,32 @@ class PrioritaRepository extends ServiceEntityRepository
         ;
     }
     */
+    /**
+     * @return Priorita[]
+     */
+    public function getAllPriorita(): array
+    {
+        /*$entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT e
+              FROM App\Entity\Eventi e, App\Entity\User u
+              WHERE u.id = e.fk_id_utente, e.fk_id_utente = :userId
+              ORDER BY e.priorita, e.id ASC'
+        )->setParameter('userId', $userId);
+
+        // returns an array of Product objects
+        return $query->getResult();
+*/
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT * FROM priorita ORDER BY id ASC
+            ';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+
+        // returns an array of arrays (i.e. a raw data set)
+        return $stmt->fetchAll();
+    }
 }
