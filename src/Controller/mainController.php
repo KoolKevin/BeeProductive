@@ -6,6 +6,7 @@ use App\Entity\Test;
 use App\Entity\Eventi;
 use App\Entity\Progetti;
 use App\Entity\User;
+use App\Entity\Priorita;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -195,22 +196,50 @@ use Psr\Log\LoggerInterface;
           if($this->session->get('login')) {
             $repository = $this->getDoctrine()->getRepository(User::class);
             $user = $repository->findOneBy(['username' => $username]);
-            $eventi = $repository->getEventiUtenteConPriorita($user->getId());
+            $eventiAttivi = $repository->getEventiAttiviUtenteConPriorita($user->getId());
+            $eventiCompletati = $repository->getEventiCompletatiUtenteConPriorita($user->getId());
 
-            $eventiPrio = [];
+            $repository = $this->getDoctrine()->getRepository(Priorita::class);
+            $priorita = $repository->getAllPriorita();
+
+            $eventiAttiviSorted = [];
+            $eventiAttiviSorted[1] = [];
+
+            $eventiCompletatiSorted = [];
+            $eventiCompletatiSorted[1] = [];
+
+            $this->logger->debug(json_encode($priorita));
+
+
+            //$this->logger->debug(json_encode($eventi[0]));
+
+
+            foreach ($priorita as $id => $prio) {
+              $eventiAttiviSorted[$id+1] = [];
+              $eventiCompletatiSorted[$id+1] = [];
+            }
+
             $i = 1;
-            $eventiPrio[1] = [];
 
-            $this->logger->debug(json_encode($eventi[0]));
-
-            for($fuckyou = 0 ; $fuckyou < count($eventi) ;) {
-              $this->logger->debug($eventi[$fuckyou]["priorita"]);
-              if($eventi[$fuckyou]["priorita"] == $i){
-                array_push($eventiPrio[$i], $eventi[$fuckyou]);
+            for($fuckyou = 0 ; $fuckyou < count($eventiAttivi) ;) {
+              $this->logger->debug("attivo".$eventiAttivi[$fuckyou]["priorita"]);
+              if($eventiAttivi[$fuckyou]["priorita"] == $i){
+                array_push($eventiAttiviSorted[$i], $eventiAttivi[$fuckyou]);
                 $fuckyou++;
               } else {
                 $i++;
-                $eventiPrio[$i] = [];
+              }
+            }
+
+            $i = 1;
+
+            for($fuckyou = 0 ; $fuckyou < count($eventiCompletati) ;) {
+              $this->logger->debug("comletato".$eventiCompletati[$fuckyou]["priorita"]);
+              if($eventiCompletati[$fuckyou]["priorita"] == $i){
+                array_push($eventiCompletatiSorted[$i], $eventiCompletati[$fuckyou]);
+                $fuckyou++;
+              } else {
+                $i++;
               }
             }
 
@@ -218,7 +247,7 @@ use Psr\Log\LoggerInterface;
 
             $this->logger->critical("bruh");
 
-            return $this->render('eventList.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true), "eventi" => $eventiPrio ) );
+            return $this->render('eventList.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true), "eventiAttivi" => $eventiAttiviSorted, "eventiCompletati" => $eventiCompletatiSorted, "prio" => $priorita ) );
           }
           else {
             return $this->redirectToRoute("index", array("errore" => "devi essere loggato per accedere a questa pagina"));

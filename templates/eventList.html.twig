@@ -55,26 +55,23 @@
                         <div class="col-12 p-0 pt-2">
                           <h3 class="mt-2 bees" >Your Events:</h3>
                           <div class="cssbad">
-                          {% set trentaeuro = 1 %}
-                          {% for priorita in eventi %}
+
+                          {% for priorita in prio %}
 
 
 
                           <div class="mad">
                             <div class="card shadow">
-                              <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold bees">Prio{{ trentaeuro }}</h6>
-                              </div>
-                              <div class="card-body">
-                                Eventi di prio {{ trentaeuro }} sotto
+                              <div class="card-header py-3" style="background-color:{{ priorita['colore'] }} !important">
+                                <h6 class="m-0 font-weight-bold bees" style="color:black !important">{{ priorita["nome"] }}</h6>
                               </div>
                             </div>
 
 
-                            {% for evento in priorita %}
+                            {% for evento in eventiAttivi[priorita["id"]] %}
                               <div class="card shadow mt-2">
                                 <div class="card-header py-3">
-                                  <h6 class="m-0 font-weight-bold bees">{{ evento.titolo }}</h6>
+                                  <h6 class="m-0 font-weight-bold bees" style="color:{{ priorita['colore'] }} !important">{{ evento.titolo }}</h6>
                                 </div>
                                 <div class="card-body">
                                   <div class="row">
@@ -88,9 +85,32 @@
                                 </div>
                               </div>
                             {% endfor %}
-                          </div>
 
-                          {% set trentaeuro = trentaeuro + 1 %}
+                            <div class="card shadow mt-2">
+                              <div class="card-header py-3" style="background-color:{{ priorita['colore'] }} !important">
+                                <h6 class="m-0 font-weight-bold bees" style="color:black !important">Completed:</h6>
+                              </div>
+                            </div>
+
+                            {% for evento in eventiCompletati[priorita["id"]] %}
+                              <div class="card shadow mt-2">
+                                <div class="card-header py-3">
+                                  <h6 class="m-0 font-weight-bold bees" style="color:{{ priorita['colore'] }} !important">{{ evento.titolo }}</h6>
+                                </div>
+                                <div class="card-body">
+                                  <div class="row">
+                                    <div class="col-6 text-center border-right">
+                                      <a data-toggle="modal" data-target="#modificaEvento{{ evento.id }}">Edit</a>
+                                    </div>
+                                    <div class="col-6 text-center border-left">
+                                      <a data-toggle="modal" data-target="#eliminaEvento{{ evento.id }}">Delete</a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            {% endfor %}
+
+                          </div>
 
                           {% else %}
                           <p>Fun fact: bees are NOT lazy, they always have something to do. What about you?</p>
@@ -107,7 +127,7 @@
 
 
 
-    {% for priorita in eventi %}
+    {% for priorita in eventiAttivi %}
     {% for evento in priorita %}
     <!-- Modal Modifica Evento {{ evento.id }}-->
     <div class="modal fade" id="modificaEvento{{ evento.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -148,6 +168,9 @@
                           <input type="text" class="form-control" name="priorita" value="{{ evento.priorita}}">
                       </div>
 
+                      <div class="form-group">
+                          <input type="hidden" class="form-control" name="id" value="{{ evento.id }}">
+                      </div>
 
                       <div class="container mt-4 mb-1">
                         <div class="row">
@@ -189,14 +212,13 @@
 
                 <div class="col">
 
-                  <form action="/deleteEvent" method="POST">
+                  <form action="/eliminaEvento" method="POST">
 
                     <p>Do you really want to delete the event "{{ evento.titolo }}"? Once you delete it, it will no longer be visible.</p>
 
                       <div class="form-group">
                           <input type="hidden" class="form-control" name="id" value="{{ evento.id }}">
                       </div>
-
 
                       <div class="container mt-4 mb-1">
                         <div class="row">
