@@ -57,12 +57,17 @@ use Psr\Log\LoggerInterface;
           $user = $repository->findOneByUsername($username);
           $eventi = $user->getEventi();
 
+          
           $oggiGiorno = intval( date("d") );
           $oggiMeseAnno = date("Y-m");
 
           $eventiUrgenti = "";
 
           foreach ($eventi as $evento) {
+            $repository = $this->getDoctrine()->getRepository(Priorita::class);
+            $priorita = $repository->findOneById($evento->getPriorita());
+            $colore = $priorita->getColore();
+
             $endDate = $evento->getEndDate();
             $endDateMeseAnno = substr($endDate, 0, 7); 
             $endDateGiorno = intval( substr($endDate, 8, 2) ); 
@@ -70,8 +75,9 @@ use Psr\Log\LoggerInterface;
             if( abs($oggiGiorno - $endDateGiorno) < 6 ) {   //magari facciamo anche un opzione per determinare l'intervallo
               switch( $evento->getPriorita() ) {
                 case 1: //il coloro lo dovrei prendere facendo una query sulla tabella priorita
+                 
                   $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
-                                    <div class="card border-left-info shadow h-100 py-2">
+                                    <div class="card border-left-info shadow h-100 py-2" style="border-left-color:'. $colore .' !important">
                                         <div class="card-body">
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col mr-2">
@@ -90,7 +96,7 @@ use Psr\Log\LoggerInterface;
                 
                 case 2:
                   $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
-                                    <div class="card border-left-primary shadow h-100 py-2">
+                                      <div class="card border-left-info shadow h-100 py-2" style="border-left-color:'. $colore .' !important">
                                         <div class="card-body">
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col mr-2">
@@ -109,7 +115,7 @@ use Psr\Log\LoggerInterface;
 
                 case 3:
                   $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
-                                    <div class="card border-left-success shadow h-100 py-2">
+                                      <div class="card border-left-info shadow h-100 py-2" style="border-left-color:'. $colore .' !important">
                                         <div class="card-body">
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col mr-2">
@@ -128,7 +134,7 @@ use Psr\Log\LoggerInterface;
 
                 case 4:
                   $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
-                                    <div class="card border-left-warning shadow h-100 py-2">
+                                      <div class="card border-left-info shadow h-100 py-2" style="border-left-color:'. $colore .' !important">
                                         <div class="card-body">
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col mr-2">
@@ -147,7 +153,7 @@ use Psr\Log\LoggerInterface;
 
                 case 5:
                   $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
-                                    <div class="card border-left-danger shadow h-100 py-2">
+                                      <div class="card border-left-info shadow h-100 py-2" style="border-left-color:'. $colore .' !important">
                                         <div class="card-body">
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col mr-2">
@@ -167,7 +173,6 @@ use Psr\Log\LoggerInterface;
             }
           }
           
-          
           return $this->render('index.html.twig', array('login' => $username, 'eventiUrgenti' => $eventiUrgenti, "sidebar" => array("calendar" => false, "eventList" => false)/*,'color' => $userColorHex*/));
         }
 
@@ -181,7 +186,24 @@ use Psr\Log\LoggerInterface;
             $user = $repository->findOneBy(['username' => $username]);
             $eventi = $user->getEventi();  //fa da solo
 
-            return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "eventi" => $eventi ) );
+            $listaEventi = "";
+
+            foreach ($eventi as $evento) {
+              $repository = $this->getDoctrine()->getRepository(Priorita::class);
+              $priorita = $repository->findOneById($evento->getPriorita());
+              $colore = $priorita->getColore();
+
+              $listaEventi .= '{ 
+                "id": '.$evento->getId().',
+                "title": "'.$evento->getTitolo().'",
+                "start": "'.$evento->getStartDate().'",
+                "end":  "'.$evento->getEndDate().'",
+                "backgroundColor": "'. $colore .'",
+                "borderColor": "'. $colore .'"
+                },';
+            }
+
+            return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "listaEventi" => $listaEventi ) );
           }
           else {
             return $this->redirectToRoute("index", array("errore" => "devi essere loggato per accedere a questa pagina"));

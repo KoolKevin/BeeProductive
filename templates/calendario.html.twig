@@ -40,7 +40,8 @@
           }
         }
         //roba calendario
-        listaEventi = JSON.parse(listaEventiUtilizzabile);
+        listaEventi = JSON.parse(listaEventiUtilizzabile)
+        console.log(listaEventi);
       }   
 
       
@@ -54,7 +55,6 @@
         defaultView: 'dayGridMonth',
 
         events: listaEventi,
-
         eventColor: '#FDD017',
         eventTextColor: '#413839',
 
@@ -130,10 +130,11 @@
 
           //chiamata che elimina l'evento
           $.post("/eliminaEvento", {
-              "id": info.event.id
+              "id": info.event.id,
+              "provenienza": "calendario"
           }, function(data) {
-              location.reload();
-              alert(data);
+              //location.reload();
+              console.log(data);
           });
         }
       });
@@ -217,14 +218,7 @@
 
 
         <!-- Main Content -->
-        <div class="eventi" data-eventi='[ {% for evento in eventi %}
-          { 
-            "id": "{{ evento.id }}",
-            "title": "{{ evento.titolo }}",
-            "start": "{{ evento.startDate}}",
-            "end": "{{ evento.endDate }}"
-            }, 
-          {% endfor %} ]'>
+        <div class="eventi" data-eventi='[ {{ listaEventi }} ]'>
         </div> <!-- serve a passare dati al javascript --> 
 
         <div id="content">

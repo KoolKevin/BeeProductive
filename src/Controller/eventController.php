@@ -75,7 +75,15 @@ use Doctrine\ORM\EntityManagerInterface;
             $entityManager->remove($evento);
             $entityManager->flush();
 
-            return new Response( "evento con l'id di:". $id . " è stato rimosso!" );
+            if( $request->get('provenienza') == "calendario") {
+                return new Response( "evento con l'id di:". $id . " è stato rimosso! e torno al calendario" );
+            }
+            elseif( $request->get('provenienza') == "eventList") {
+                return $this->redirectToRoute("loadEventPage", array("username" => $this->session->get('login')));
+            }
+            else {
+                return new Response( "non ho idea di come tu abbia fatto ad eliminare" );
+            }
         }
 
         /**
@@ -105,12 +113,45 @@ use Doctrine\ORM\EntityManagerInterface;
                   return $this->redirectToRoute("index", array("errore" => "il login non corrisponde"));
 
                 }
-
-
             }
             else {
                 return $this->redirectToRoute("index", array("errore" => "non sei loggato, oppure i dati non sono stati inseriti nel modo corretto"));
             }
         }
 
+        /**
+        * @Route("/segnaComeCompletato/{id}", name="segnaComeCompletato")
+        */
+        public function segnaComeCompletato( $id )
+        {
+            $entityManager = $this->getDoctrine()->getManager();
+            $evento = $entityManager->getRepository(Eventi::class)->find($id);
+
+            if (!$evento) {
+                return new Response( "evento con l'id di:". $id . " non è stato trovato" );
+            }
+
+            $evento->setCompletato(1);
+            $entityManager->flush();
+
+            return $this->redirectToRoute("loadEventPage", array("username" => $this->session->get('login')) );
+        }
+
+        /**
+        * @Route("/segnaComeNonCompletato/{id}", name="segnaComeNonCompletato")
+        */
+        public function segnaComeNonCompletato( $id )
+        {
+            $entityManager = $this->getDoctrine()->getManager();
+            $evento = $entityManager->getRepository(Eventi::class)->find($id);
+
+            if (!$evento) {
+                return new Response( "evento con l'id di:". $id . " non è stato trovato" );
+            }
+
+            $evento->setCompletato(0);
+            $entityManager->flush();
+
+            return $this->redirectToRoute("loadEventPage", array("username" => $this->session->get('login')) );
+        }
     }
