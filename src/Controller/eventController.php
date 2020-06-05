@@ -154,4 +154,38 @@ use Doctrine\ORM\EntityManagerInterface;
 
             return $this->redirectToRoute("loadEventPage", array("username" => $this->session->get('login')) );
         }
+
+        /**
+        * @Route("/cambiaDate", name="cambiaDate")
+        */
+        public function cambiaDate( Request $request )
+        {
+            $id = $request->get('id');
+            $dataInizio = $request->get('dataInizio');
+            $dataFine = $request->get('dataFine');
+
+            if( $request->get('id') && $this->session->get('login') ) {
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $evento = $entityManager->getRepository(Eventi::class)->findOneById( $id );
+
+                $user = $this->getDoctrine()->getRepository(User::class)->findOneByUsername( $this->session->get('login') );
+
+                if($user->getId() == $evento->getFkIdUtente()->getId()){
+
+                  $evento->setStartDate($dataInizio);
+                  $evento->setEndDate($dataFine);
+
+                  $entityManager->flush();
+
+                  return new Response( "è andato tutto bene nel cambiamento delle date tramite drag and drop" );
+
+                } else {
+                    return new Response( "non è stato trovato lo user nel cambiamento delle date tramite drag and drop" );
+                }
+            }
+            else {
+                return $this->redirectToRoute("index", array("errore" => "non sei loggato, oppure i dati non sono stati inseriti nel modo corretto"));
+            }
+        }
     }

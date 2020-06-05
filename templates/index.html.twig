@@ -27,8 +27,11 @@
                                     <!--questo va generato dinamicamente-->
                                     <div class="row">
                                         <!-- task 1 -->
-                                        {{ eventiUrgenti | raw }}
-
+                                        {% if eventiUrgenti is empty %}
+                                            Ti puoi rilassare per un po', ma non TROPPO!
+                                        {% else %}
+                                            {{ eventiUrgenti | raw }}
+                                        {% endif %}
                                     </div>
 
                                 </div>

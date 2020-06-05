@@ -57,10 +57,8 @@ use Psr\Log\LoggerInterface;
           $user = $repository->findOneByUsername($username);
           $eventi = $user->getEventi();
 
-          
-          $oggiGiorno = intval( date("d") );
-          $oggiMeseAnno = date("Y-m");
-
+          $oggi =  date_create( date("Y-m-d") );
+        
           $eventiUrgenti = "";
 
           foreach ($eventi as $evento) {
@@ -68,11 +66,11 @@ use Psr\Log\LoggerInterface;
             $priorita = $repository->findOneById($evento->getPriorita());
             $colore = $priorita->getColore();
 
-            $endDate = $evento->getEndDate();
-            $endDateMeseAnno = substr($endDate, 0, 7); 
-            $endDateGiorno = intval( substr($endDate, 8, 2) ); 
-            
-            if( abs($oggiGiorno - $endDateGiorno) < 6 ) {   //magari facciamo anche un opzione per determinare l'intervallo
+            $endDate = date_create( $evento->getEndDate() );
+
+            $differenza = date_diff($oggi, $endDate);
+
+            if( $evento->getCompletato() != 1 && $differenza->invert == 0 && $differenza->d < 7 ) {   //magari facciamo anche un opzione per determinare l'intervallo
               switch( $evento->getPriorita() ) {
                 case 1: //il coloro lo dovrei prendere facendo una query sulla tabella priorita
                  
@@ -192,15 +190,18 @@ use Psr\Log\LoggerInterface;
               $repository = $this->getDoctrine()->getRepository(Priorita::class);
               $priorita = $repository->findOneById($evento->getPriorita());
               $colore = $priorita->getColore();
-
-              $listaEventi .= '{ 
-                "id": '.$evento->getId().',
-                "title": "'.$evento->getTitolo().'",
-                "start": "'.$evento->getStartDate().'",
-                "end":  "'.$evento->getEndDate().'",
-                "backgroundColor": "'. $colore .'",
-                "borderColor": "'. $colore .'"
-                },';
+              
+              if( $evento->getCompletato() != 1 ) {   //gli eventi completati non li carico
+                $listaEventi .= '{ 
+                  "id": '.$evento->getId().',
+                  "title": "'.$evento->getTitolo().'",
+                  "start": "'.$evento->getStartDate().'",
+                  "end":  "'.$evento->getEndDate().'",
+                  "backgroundColor": "'. $colore .'",
+                  "borderColor": "'. $colore .'"
+                  },';
+              }
+              
             }
 
             return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "listaEventi" => $listaEventi ) );

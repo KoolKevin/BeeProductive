@@ -64,6 +64,23 @@
           right:  'today prev,next'
         },
 
+        eventDrop: function(info) {
+          var dataInizio = new Date(info.event.start);
+          var dataFine = new Date(info.event.end);
+
+          dataInizio = dataInizio.getFullYear() + "-" + ( "0" + (dataInizio.getMonth() + 1)).slice(-2) + "-" + ( "0" + dataInizio.getDate()).slice(-2);
+          dataFine = dataFine.getFullYear() + "-" + ( "0" + (dataFine.getMonth() + 1)).slice(-2) + "-" + ( "0" + dataFine.getDate()).slice(-2);
+
+          //chiamata ajax per cambiare le date
+          $.post("/cambiaDate", {
+              "id": info.event.id,
+              "dataInizio": dataInizio,
+              "dataFine": dataFine
+          }, function(data) {
+              alert( data ); //mi fa un po' schifo, serve a caricare di nuovo gli eventi cosi hanno l'id anche quelli nuovi
+          });
+        },
+
         //bottone per inserimento eventi
         customButtons: {
           addEventButton: {
@@ -136,7 +153,7 @@
               //location.reload();
               console.log(data);
           });
-        }
+        } 
       });
 
       calendar.render();
