@@ -17,8 +17,7 @@ class UserSession
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="sess_id")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="integer")
      */
     private $fkIdUser;
 
@@ -28,7 +27,7 @@ class UserSession
     private $sessId;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="string", length=30)
      */
     private $addDate;
 
@@ -37,12 +36,12 @@ class UserSession
         return $this->id;
     }
 
-    public function getFkIdUser(): ?User
+    public function getFkIdUser()
     {
         return $this->$fkIdUser;
     }
 
-    public function setFkIdUser(?User $fkIdUser): self
+    public function setFkIdUser( $fkIdUser)
     {
         $this->$fkIdUser = $fkIdUser;
 
@@ -54,19 +53,19 @@ class UserSession
         return $this->$sessId;
     }
 
-    public function setSessId(string $sessId): self
+    public function setSessId( $sessId)
     {
         $this->$sessId = $sessId;
 
         return $this;
     }
 
-    public function getAddDate(): ?\DateTimeInterface
+    public function getAddDate()
     {
         return $this->addDate;
     }
 
-    public function setAddDate(\DateTimeInterface $addDate): self
+    public function setAddDate( $addDate): self
     {
         $this->addDate = $addDate;
 

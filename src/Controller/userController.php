@@ -70,7 +70,7 @@ use Doctrine\ORM\EntityManagerInterface;
         */
         public function setLogin(Request $request) {
           if($this->session->get('login')){
-            return $this->render('index.html.twig', array('login' => $this->session->get("login"), "sidebar" => array("calendar" => false, "eventList" => false)/*,'color' => $userColorHex*/));
+            return $this->redirectToRoute("home", array('username' =>  $this->session->get('login') ));
           }
 
           if($request->get('username',false) && $request->get('password',false)){
