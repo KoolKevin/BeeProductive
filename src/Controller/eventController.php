@@ -5,6 +5,7 @@ use App\Entity\Test;
 use App\Entity\Eventi;
 use App\Entity\Progetti;
 use App\Entity\User;
+use App\Entity\Statistiche;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -131,7 +132,21 @@ use Doctrine\ORM\EntityManagerInterface;
                 return new Response( "evento con l'id di:". $id . " non è stato trovato" );
             }
 
+            $startDate = date_create( $evento->getStartDate() );
+            $endDate = date_create( $evento->getEndDate() );
+            $durata =  date_diff($startDate, $endDate);
+            
             $evento->setCompletato(1);
+            $entityManager->flush();
+
+            $statistica = new Statistiche();
+
+            $statistica->setFkIdEvento( $id );
+            $statistica->setTitoloEvento( $evento->getTitolo() );
+            $statistica->setCompletionDate( date("Y-m-d") );
+            $statistica->setDurata( $durata->d );
+
+            $entityManager->persist($statistica);
             $entityManager->flush();
 
             return $this->redirectToRoute("loadEventPage", array("username" => $this->session->get('login')) );
@@ -151,6 +166,11 @@ use Doctrine\ORM\EntityManagerInterface;
 
             $evento->setCompletato(0);
             $entityManager->flush();
+
+            $statistica = $entityManager->getRepository(Statistiche::class)->findOneBy(['fkIdEvento' => $id]);
+            $entityManager->remove($statistica);
+            $entityManager->flush();
+
 
             return $this->redirectToRoute("loadEventPage", array("username" => $this->session->get('login')) );
         }

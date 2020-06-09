@@ -7,6 +7,7 @@ use App\Entity\Eventi;
 use App\Entity\Progetti;
 use App\Entity\User;
 use App\Entity\Priorita;
+use App\Entity\Statistiche;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,16 +38,29 @@ use Psr\Log\LoggerInterface;
         * @Route("/test")
         */
         public function test( \Swift_Mailer $mailer ){
-          $message = (new Swift_Message()) //non capisco tanto
+          /*$message = (new Swift_Message()) //non capisco tanto
             ->setSubject('subject')
             ->setFrom(['kevinkoltraka1011@gmail.com' => 'Mike Hoxlong'])
             ->setTo(['akile1011@gmail.come' => 'Mike Litoris'])
             ->setBody('Here is the message itself')
             ->addPart('<q>Here is the message itself</q>', 'text/html');
 
-          $mailer->send($message);
+          $mailer->send($message);*/
+
+          $repository = $this->getDoctrine()->getRepository(Statistiche::class);
+          $statistiche = $repository->find(4);
+          //$eventi = $user->getEventi();
+
+          /*$statistica = new Statistiche();
+          $statistica->setTitoloEvento('Keyboard');
+          $statistica->setCompletionDate("oggi-oggi-oggi");
+          $statistica->setDurata( 4 );
+          $statistica->setFkIdEvento( 4 );
           
-          return new Response('la route funziona!');
+          $entityManager->persist($statistica);
+          $entityManager->flush();*/
+
+          return new Response( $statistiche->getTitoloEvento() );
         }
 
         /**
@@ -217,8 +231,32 @@ use Psr\Log\LoggerInterface;
         */
         public function generaListaEventi($username){
           if($this->session->get('login')) {
+            //cancello gli eventi segnati come completati da più di un giorno
+            $entityManager = $this->getDoctrine()->getManager();
             $repository = $this->getDoctrine()->getRepository(User::class);
-            $user = $repository->findOneBy(['username' => $username]);
+            $user = $repository->findOneByUsername($username);
+            $eventi = $user->getEventi();  //fa da solo
+
+            $oggi =  date_create( date("Y-m-d") );
+          
+            $bruh = "";
+
+            foreach ($eventi as $evento) {    
+              $statistica = $entityManager->getRepository(Statistiche::class)->findOneBy(['fkIdEvento' => $evento->getId()]); 
+
+              if ( $statistica ) {
+                $endDate = date_create( $statistica->getCompletionDate() );
+                $differenza = date_diff($oggi, $endDate);
+
+                if( $differenza->d > 0 ) {
+                  $entityManager->remove($evento);
+                  $entityManager->flush();
+                }
+                
+              }
+            }
+
+            //la merda di roffia
             $eventiAttivi = $repository->getEventiAttiviUtenteConPriorita($user->getId());
             $eventiCompletati = $repository->getEventiCompletatiUtenteConPriorita($user->getId());
 
