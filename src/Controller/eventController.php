@@ -25,6 +25,35 @@ use Doctrine\ORM\EntityManagerInterface;
         }
 
         /**
+        * @Route("/salvaProgetto", name="salvaProgetto")
+        */
+        public function salvaProgetto( Request $request ) {
+            if( $request->get('data') && $this->session->get('login') ) {
+                $data = $request->get('data');
+                $data = json_decode($data);
+
+                $progetto = new Progetti();
+
+                $user = $this->getDoctrine()->getRepository(User::class)->findOneByUsername( $this->session->get('login') );
+
+                $progetto->setFkIdUtente( $user->getId() );
+                $progetto->setTitolo($data->title);
+                $progetto->setDeadline($data->end);
+               
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($progetto);
+                $entityManager->flush();
+
+                return new Response( "il caricamento del progetto è stato un successo!" );
+            }
+            else {
+                return $this->redirectToRoute("index", array("errore" => "non sei loggato, oppure i dati non sono stati inseriti nel modo corretto"));
+            }
+        }
+
+
+        /**
         * @Route("/salvaEvento", methods={"GET, POST"}, name="salvaEvento")
         */
         public function salvaEvento( Request $request ) {

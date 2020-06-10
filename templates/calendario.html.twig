@@ -3,12 +3,6 @@
 {% block stylesheets %}
   <link href="{{ asset('fullcalendar/packages/core/main.css') }}" rel='stylesheet' />
   <link href="{{ asset('fullcalendar/packages/daygrid/main.css') }}" rel='stylesheet' />
-
-  <style>
-    #bidoneSfondo {
-      background-color: red;
-    }
-  </style>
 {% endblock %}
 
 {% block javascripts %}
@@ -19,8 +13,6 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       var calendarEl = document.getElementById('calendar');
-      var bidoneEl = document.getElementById('bidone');
-
       var listaEventi = document.querySelector('.eventi').dataset.eventi;
 
       if( listaEventi == "[  ]" ) {
@@ -53,15 +45,34 @@
         editable: true,
 
         defaultView: 'dayGridMonth',
+        fixedWeekCount: false,
 
         events: listaEventi,
         eventColor: '#FDD017',
         eventTextColor: '#413839',
+        eventBorderColor: '#4287f5',
 
         header: {
-          left:   'addEventButton',
+          left:   'addEventButton addProjectButton',
           center: 'title',
           right:  'today prev,next'
+        },
+
+        eventClick: function(info) {
+          $('#cancellaEventoModal').modal('show');
+          
+          $("#cancellaEvento").click(function(){
+            $('#cancellaEventoModal').modal('hide');
+
+            $.post("/eliminaEvento", {
+                "id": info.event.id,
+                "provenienza": "calendario"
+            }, function(data) {
+                location.reload();
+                console.log(data);
+            }); 
+
+          });          
         },
 
         eventDrop: function(info) {
@@ -84,7 +95,7 @@
         //bottone per inserimento eventi
         customButtons: {
           addEventButton: {
-            text: 'inserisci un evento',
+            text: 'Inserisci un evento',
 
             click: function() {
               $('#inserimentoEventoModal').modal('show');
@@ -128,37 +139,51 @@
               });
               
             }
+          },
+
+          addProjectButton: {
+            text: 'Crea Progetto',
+
+            click: function() {
+              $('#creazioneProgettoModal').modal('show');
+
+              $("#caricaProgetto").click(function() {
+                var titolo = $("input[name=titoloProgetto]").val();
+                var deadline = $("input[name=deadline]").val();
+                
+                if ( deadline ) { // valid?
+                  var progetto = {
+                              title: titolo,
+                              end: deadline
+                          };
+
+                  progetto = JSON.stringify( progetto );
+
+                  //manda alla route per salvare il nuovo evento nel db
+                  $.post("/salvaProgetto", {
+                      "data": progetto
+                  }, function(data) {
+                      alert("adam risponde con:" + data)
+                      location.reload(); //mi fa un po' schifo, serve a caricare di nuovo gli eventi cosi hanno l'id anche quelli nuovi
+                  });
+                } 
+                else {
+                  alert('Invalid date.');
+                }
+
+                $('#creazioneProgettoModal').modal('hide');
+                exit(); //EZ fix serve a terminare lo script cosi non raddoppio l'aggiungimento di eventi
+              });              
+            }
           }
-        },
-      });
-
-      var bidone = new FullCalendar.Calendar(bidoneEl, {
-        plugins: [ 'interaction', 'dayGrid' ],
-        defaultDate: '2020-04-12',
-
-        editable: true,
-        droppable: true, // will let it receive events!
-
-        header: false,
-        fixedWeekCount: false,
-
-        eventReceive: function(info) {
-          console.log('event received!', info.event.id);
-
-          //chiamata che elimina l'evento
-          $.post("/eliminaEvento", {
-              "id": info.event.id,
-              "provenienza": "calendario"
-          }, function(data) {
-              //location.reload();
-              console.log(data);
-          });
-        } 
+          
+        }
       });
 
       calendar.render();
-      bidone.render();
     });
+
+    
   </script>
 {% endblock %}
 
@@ -225,14 +250,76 @@
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
 
-              <div class="modal-footer" style="justify-content:left !important">
-                <p>Aggiungiaml</p>
+        <!-- modal creazione progetto -->
+        <div class="modal fade" id="creazioneProgettoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Aggiungi evento!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+
+              <div class="modal-body">
+                <div class="container">
+                  <div class="row">
+                    <div class="col">
+                      <form>
+                        <div class="form-group">
+                          <label for="titoloProgetto"> Titolo Progetto </label>
+                          <input type="text" class="form-control" name="titoloProgetto">
+                        </div>
+                        
+                        <div class="form-group">
+                          <label for="deadline"> DeadLine </label>
+                          <input type="text" class="form-control" name="deadline" placeholder="yyyy-mm-dd">
+                        </div>
+
+                        <div class="container mt-4 mb-1">
+                          <div class="row">
+                            <div class="col text-center">
+                              <button id="caricaProgetto" type="button" class="btn btn-primary align-self-center">Carica</button>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
+        <!-- modal cancellazione Evento -->
+        <div class="modal fade" id="cancellaEventoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Sei sicuro di voler cancellare questo evento?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+
+              <div class="modal-body">
+                <div class="container">
+                  <div class="row">
+                    <div class="col text-center bg-success">
+                      <button id="cancellaEvento" class="btn btn-default"><i class="text-white fas fa-check"></i></button>
+                    </div>
+
+                    <div class="col text-center bg-danger">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close"><i class="text-white fas fa-times"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Main Content -->
         <div class="eventi" data-eventi='[ {{ listaEventi }} ]'>
@@ -246,12 +333,10 @@
                     <div id='calendar'></div>
                   </div>
 
-                  <div class="col-xl-2 col-lg-3 p-0 pt-5 ml-5">
-                    <div class="row">
-                      <h2>cancella eventi</h2>
-                      <div id="bidoneSfondo">
-                        <div class="invisible" id='bidone'></div>
-                      </div>
+                  <div class="col-xl-2 col-lg-3 p-0 pt-5 ml-5 text-center">
+                    <div class="row ">
+                      <h2>PROGETTI</h2>
+                      
                     </div>
                 </div>
               </div>

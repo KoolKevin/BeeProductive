@@ -199,6 +199,7 @@ use Psr\Log\LoggerInterface;
             $eventi = $user->getEventi();  //fa da solo
 
             $listaEventi = "";
+            $listaProgetti = "";
 
             foreach ($eventi as $evento) {
               $repository = $this->getDoctrine()->getRepository(Priorita::class);
@@ -211,8 +212,7 @@ use Psr\Log\LoggerInterface;
                   "title": "'.$evento->getTitolo().'",
                   "start": "'.$evento->getStartDate().'",
                   "end":  "'.$evento->getEndDate().'",
-                  "backgroundColor": "'. $colore .'",
-                  "borderColor": "'. $colore .'"
+                  "backgroundColor": "'. $colore .'"
                   },';
               }
               

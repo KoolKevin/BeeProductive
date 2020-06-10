@@ -18,20 +18,28 @@ class Progetti
      */
     private $id;
 
+
+
     /**
      * @ORM\Column(type="string", length=30)
      */
     private $titolo;
 
     /**
-     * @ORM\Column(type="object")
+     * @ORM\Column(type="string", length=30)
      */
-    private $startDate;
+    private $deadline;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Eventi", mappedBy="fk_id_progetto", orphanRemoval=true)
      */
     private $eventi;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="progettis")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $fkIdUtente;
 
     public function __construct()
     {
@@ -42,6 +50,7 @@ class Progetti
     {
         return $this->id;
     }
+
 
     public function getTitolo(): ?string
     {
@@ -55,14 +64,14 @@ class Progetti
         return $this;
     }
 
-    public function getStartDate()
+    public function getDeadline()
     {
-        return $this->startDate;
+        return $this->deadline;
     }
 
-    public function setStartDate($startDate): self
+    public function setDeadline($deadline): self
     {
-        $this->startDate = $startDate;
+        $this->deadline = $deadline;
 
         return $this;
     }
@@ -94,6 +103,18 @@ class Progetti
                 $eventi->setFkIdProgetto(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFkIdUtente(): ?User
+    {
+        return $this->fkIdUtente;
+    }
+
+    public function setFkIdUtente(?User $fkIdUtente): self
+    {
+        $this->fkIdUtente = $fkIdUtente;
 
         return $this;
     }
