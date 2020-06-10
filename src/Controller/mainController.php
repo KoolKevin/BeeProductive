@@ -197,9 +197,27 @@ use Psr\Log\LoggerInterface;
             $repository = $this->getDoctrine()->getRepository(User::class);
             $user = $repository->findOneBy(['username' => $username]);
             $eventi = $user->getEventi();  //fa da solo
+            $progetti = $user->getProgettis();
 
             $listaEventi = "";
             $listaProgetti = "";
+
+            foreach($progetti as $progetto) {
+              //return new Response( $progetto->getTitolo() );
+              
+              $listaProgetti .= ' <div class="row justify-content-center mb-3">
+                                      <div class="card border-left-warning shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">'. $progetto->getTitolo() .'</div>
+                                                    <div class="h5 mb-0 text-gray-800">'. $progetto->getDeadline() .'</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                      </div>
+                                  </div>';
+            }
 
             foreach ($eventi as $evento) {
               $repository = $this->getDoctrine()->getRepository(Priorita::class);
@@ -218,7 +236,7 @@ use Psr\Log\LoggerInterface;
               
             }
 
-            return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "listaEventi" => $listaEventi ) );
+            return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "listaEventi" => $listaEventi, "listaProgetti" => $listaProgetti ) );
           }
           else {
             return $this->redirectToRoute("index", array("errore" => "devi essere loggato per accedere a questa pagina"));

@@ -36,7 +36,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
                 $user = $this->getDoctrine()->getRepository(User::class)->findOneByUsername( $this->session->get('login') );
 
-                $progetto->setFkIdUtente( $user->getId() );
+                $progetto->setFkIdUtente( $user );
                 $progetto->setTitolo($data->title);
                 $progetto->setDeadline($data->end);
                

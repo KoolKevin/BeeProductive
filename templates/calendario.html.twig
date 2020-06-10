@@ -334,10 +334,12 @@
                   </div>
 
                   <div class="col-xl-2 col-lg-3 p-0 pt-5 ml-5 text-center">
-                    <div class="row ">
-                      <h2>PROGETTI</h2>
-                      
-                    </div>
+                    <h2>PROGETTI</h2>
+                    {% if listaProgetti is empty %}
+                        non ci sono progetti
+                    {% else %}
+                        {{ listaProgetti | raw }}
+                    {% endif %}
                 </div>
               </div>
 
