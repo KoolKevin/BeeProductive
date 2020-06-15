@@ -56,7 +56,7 @@ use Psr\Log\LoggerInterface;
           $statistica->setCompletionDate("oggi-oggi-oggi");
           $statistica->setDurata( 4 );
           $statistica->setFkIdEvento( 4 );
-          
+
           $entityManager->persist($statistica);
           $entityManager->flush();*/
 
@@ -72,7 +72,7 @@ use Psr\Log\LoggerInterface;
           $eventi = $user->getEventi();
 
           $oggi =  date_create( date("Y-m-d") );
-        
+
           $eventiUrgenti = "";
 
           foreach ($eventi as $evento) {
@@ -87,7 +87,7 @@ use Psr\Log\LoggerInterface;
             if( $evento->getCompletato() != 1 && $differenza->invert == 0 && $differenza->d < 7 ) {   //magari facciamo anche un opzione per determinare l'intervallo
               switch( $evento->getPriorita() ) {
                 case 1: //il coloro lo dovrei prendere facendo una query sulla tabella priorita
-                 
+
                   $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
                                     <div class="card border-left-info shadow h-100 py-2" style="border-left-color:'. $colore .' !important">
                                         <div class="card-body">
@@ -105,7 +105,7 @@ use Psr\Log\LoggerInterface;
                                     </div>
                                 </div>';
                   break;
-                
+
                 case 2:
                   $eventiUrgenti .= '<div class="col-xl-4 col-md-6 mb-4">
                                       <div class="card border-left-info shadow h-100 py-2" style="border-left-color:'. $colore .' !important">
@@ -184,7 +184,7 @@ use Psr\Log\LoggerInterface;
               }
             }
           }
-          
+
           return $this->render('index.html.twig', array('login' => $username, 'eventiUrgenti' => $eventiUrgenti, "sidebar" => array("calendar" => false, "eventList" => false)/*,'color' => $userColorHex*/));
         }
 
@@ -204,7 +204,7 @@ use Psr\Log\LoggerInterface;
 
             foreach($progetti as $progetto) {
               //return new Response( $progetto->getTitolo() );
-              
+
               $listaProgetti .= ' <div class="row justify-content-center mb-3">
                                       <div class="card border-left-warning shadow h-100 py-2">
                                         <div class="card-body">
@@ -223,9 +223,9 @@ use Psr\Log\LoggerInterface;
               $repository = $this->getDoctrine()->getRepository(Priorita::class);
               $priorita = $repository->findOneById($evento->getPriorita());
               $colore = $priorita->getColore();
-              
+
               if( $evento->getCompletato() != 1 ) {   //gli eventi completati non li carico
-                $listaEventi .= '{ 
+                $listaEventi .= '{
                   "id": '.$evento->getId().',
                   "title": "'.$evento->getTitolo().'",
                   "start": "'.$evento->getStartDate().'",
@@ -233,7 +233,7 @@ use Psr\Log\LoggerInterface;
                   "backgroundColor": "'. $colore .'"
                   },';
               }
-              
+
             }
 
             return $this->render('calendario.html.twig', array('login' => $username, "sidebar" => array("calendar" => true, "eventList" => false), "listaEventi" => $listaEventi, "listaProgetti" => $listaProgetti ) );
@@ -249,6 +249,8 @@ use Psr\Log\LoggerInterface;
         */
         public function generaListaEventi($username){
           if($this->session->get('login')) {
+
+            //la merda di kevin
             //cancello gli eventi segnati come completati da più di un giorno
             $entityManager = $this->getDoctrine()->getManager();
             $repository = $this->getDoctrine()->getRepository(User::class);
@@ -256,11 +258,11 @@ use Psr\Log\LoggerInterface;
             $eventi = $user->getEventi();  //fa da solo
 
             $oggi =  date_create( date("Y-m-d") );
-          
+
             $bruh = "";
 
-            foreach ($eventi as $evento) {    
-              $statistica = $entityManager->getRepository(Statistiche::class)->findOneBy(['fkIdEvento' => $evento->getId()]); 
+            foreach ($eventi as $evento) {
+              $statistica = $entityManager->getRepository(Statistiche::class)->findOneBy(['fkIdEvento' => $evento->getId()]);
 
               if ( $statistica ) {
                 $endDate = date_create( $statistica->getCompletionDate() );
@@ -270,16 +272,45 @@ use Psr\Log\LoggerInterface;
                   $entityManager->remove($evento);
                   $entityManager->flush();
                 }
-                
+
               }
             }
 
             //la merda di roffia
+
+            $progetti = $repository->getProgettiUtente($user->getId());
             $eventiAttivi = $repository->getEventiAttiviUtenteConPriorita($user->getId());
             $eventiCompletati = $repository->getEventiCompletatiUtenteConPriorita($user->getId());
 
             $repository = $this->getDoctrine()->getRepository(Priorita::class);
             $priorita = $repository->getAllPriorita();
+
+            $progettiSorted = [];
+
+            foreach ($progetti as $id => $prog) {
+              $progettiSorted[$prog["id"]] = $prog;
+              $progettiSorted[$prog["id"]]["eventiAttivi"] = [];
+              $progettiSorted[$prog["id"]]["eventiCompletati"] = [];
+            }
+
+            $i = 1;
+
+            $this->logger->debug(json_encode($progettiSorted));
+
+            foreach ($eventiAttivi as $id => $evento) {
+              array_push($progettiSorted[$evento["fk_id_progetto_id"]]["eventiAttivi"], $evento);
+            }
+
+            foreach ($eventiCompletati as $id => $evento) {
+              array_push($progettiSorted[$evento["fk_id_progetto_id"]]["eventiCompletati"], $evento);
+            }
+
+            $this->logger->debug(json_encode($progettiSorted));
+            $this->logger->debug(json_encode($eventiAttivi));
+            $this->logger->debug(json_encode($eventiCompletati));
+
+
+            /*caricamento solo per priorita
 
             $eventiAttiviSorted = [];
             $eventiAttiviSorted[1] = [];
@@ -313,7 +344,7 @@ use Psr\Log\LoggerInterface;
             $i = 1;
 
             for($fuckyou = 0 ; $fuckyou < count($eventiCompletati) ;) {
-              $this->logger->debug("comletato".$eventiCompletati[$fuckyou]["priorita"]);
+              $this->logger->debug("completato".$eventiCompletati[$fuckyou]["priorita"]);
               if($eventiCompletati[$fuckyou]["priorita"] == $i){
                 array_push($eventiCompletatiSorted[$i], $eventiCompletati[$fuckyou]);
                 $fuckyou++;
@@ -322,11 +353,15 @@ use Psr\Log\LoggerInterface;
               }
             }
 
+            return $this->render('eventList.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true), "eventiAttivi" => $eventiAttiviSorted, "eventiCompletati" => $eventiCompletatiSorted, "prio" => $priorita ) );
+
+            */
+
             //$this->logger->debug(json_encode($eventiPrio[1]["prio"]));
 
             $this->logger->critical("bruh");
 
-            return $this->render('eventList.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true), "eventiAttivi" => $eventiAttiviSorted, "eventiCompletati" => $eventiCompletatiSorted, "prio" => $priorita ) );
+            return $this->render('eventList.html.twig', array('login' => $username, "sidebar" => array("calendar" => false, "eventList" => true), "progetti" => $progettiSorted, "prio" => $priorita ) );
           }
           else {
             return $this->redirectToRoute("index", array("errore" => "devi essere loggato per accedere a questa pagina"));
