@@ -48,11 +48,17 @@ class User
      */
     private $eventis;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Progetti", mappedBy="fkIdUtente", orphanRemoval=true)
+     */
+    private $progettis;
+
     public function __construct()
     {
         $this->sess_id = new ArrayCollection();
         $this->eventi = new ArrayCollection();
         $this->eventis = new ArrayCollection();
+        $this->progettis = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -164,5 +170,36 @@ class User
     public function getEventis(): Collection
     {
         return $this->eventis;
+    }
+
+    /**
+     * @return Collection|Progetti[]
+     */
+    public function getProgettis(): Collection
+    {
+        return $this->progettis;
+    }
+
+    public function addProgetti(Progetti $progetti): self
+    {
+        if (!$this->progettis->contains($progetti)) {
+            $this->progettis[] = $progetti;
+            $progetti->setFkIdUtente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProgetti(Progetti $progetti): self
+    {
+        if ($this->progettis->contains($progetti)) {
+            $this->progettis->removeElement($progetti);
+            // set the owning side to null (unless already changed)
+            if ($progetti->getFkIdUtente() === $this) {
+                $progetti->setFkIdUtente(null);
+            }
+        }
+
+        return $this;
     }
 }

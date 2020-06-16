@@ -106,4 +106,32 @@ class UserRepository extends ServiceEntityRepository
         // returns an array of arrays (i.e. a raw data set)
         return $stmt->fetchAll();
     }
+
+    public function getProgettiUtente($userId): array
+    {
+        /*$entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT e
+              FROM App\Entity\Eventi e, App\Entity\User u
+              WHERE u.id = e.fk_id_utente, e.fk_id_utente = :userId
+              ORDER BY e.priorita, e.id ASC'
+        )->setParameter('userId', $userId);
+
+        // returns an array of Product objects
+        return $query->getResult();
+*/
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT p.* FROM progetti p, user u
+            WHERE u.id = p.fk_id_utente_id AND p.fk_id_utente_id = :userId
+            ORDER BY p.deadline ASC
+            ';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['userId' => $userId]);
+
+        // returns an array of arrays (i.e. a raw data set)
+        return $stmt->fetchAll();
+    }
 }
