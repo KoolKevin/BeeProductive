@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Creato il: Giu 10, 2020 alle 13:26
+-- Creato il: Giu 18, 2020 alle 20:36
 -- Versione del server: 8.0.13-4
 -- Versione PHP: 7.2.24-0ubuntu0.18.04.6
 
@@ -38,6 +38,20 @@ CREATE TABLE `eventi` (
   `end_date` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `completato` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dump dei dati per la tabella `eventi`
+--
+
+INSERT INTO `eventi` (`id`, `fk_id_utente_id`, `fk_id_progetto_id`, `start_date`, `titolo`, `priorita`, `end_date`, `completato`) VALUES
+(87, 2, 3, '2020-03-01', 'tesina', 5, '2020-06-17', 0),
+(89, 2, 5, '2020-06-15', 'compleanno di luca', 1, '2020-06-15', 0),
+(90, 2, 3, '2020-06-01', 'fare funzionare il mailer', 4, '2020-06-18', 0),
+(91, 2, 6, '2020-06-15', 'mate', 5, '2020-06-17', 0),
+(92, 2, 6, '2020-06-15', 'info', 4, '2020-06-17', 0),
+(93, 2, 6, '2020-06-15', 'ita', 2, '2020-06-17', 0),
+(94, 2, 3, '2020-06-03', 'metti un campo desc', 3, '2020-06-04', 0),
+(97, 2, 3, '2020-06-15', 'Sistemare tutto', 5, '2020-06-17', 0);
 
 -- --------------------------------------------------------
 
@@ -95,9 +109,19 @@ INSERT INTO `priorita` (`id`, `nome`, `colore`) VALUES
 
 CREATE TABLE `progetti` (
   `id` int(11) NOT NULL,
+  `fk_id_utente_id` int(11) NOT NULL,
   `titolo` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `start_date` longtext COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '(DC2Type:object)'
+  `deadline` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '(DC2Type:object)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dump dei dati per la tabella `progetti`
+--
+
+INSERT INTO `progetti` (`id`, `fk_id_utente_id`, `titolo`, `deadline`) VALUES
+(3, 2, 'Tesina', '2020-06-13'),
+(5, 2, 'ProgettoSegreto', '2020-06-17'),
+(6, 2, 'maturità', '2020-06-17');
 
 -- --------------------------------------------------------
 
@@ -119,7 +143,8 @@ CREATE TABLE `statistiche` (
 
 INSERT INTO `statistiche` (`id`, `fk_id_evento`, `titolo_evento`, `completion_date`, `durata`) VALUES
 (8, 81, 'prova', '2020-06-08', 3),
-(10, 82, 'altro evento', '2020-06-09', 15);
+(10, 82, 'altro evento', '2020-06-09', 15),
+(12, 86, 'evento', '2020-06-10', 10);
 
 -- --------------------------------------------------------
 
@@ -153,7 +178,7 @@ INSERT INTO `user` (`id`, `username`, `mail`, `password`) VALUES
 
 CREATE TABLE `user_session` (
   `id` int(11) NOT NULL,
-  `fk_id_user` int(11) NOT NULL,
+  `fk_id_utente` int(11) NOT NULL,
   `sess_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `add_date` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -162,7 +187,7 @@ CREATE TABLE `user_session` (
 -- Dump dei dati per la tabella `user_session`
 --
 
-INSERT INTO `user_session` (`id`, `fk_id_user`, `sess_id`, `add_date`) VALUES
+INSERT INTO `user_session` (`id`, `fk_id_utente`, `sess_id`, `add_date`) VALUES
 (1, 1, '22', NULL),
 (2, 1, '22', NULL);
 
@@ -213,7 +238,7 @@ ALTER TABLE `user`
 --
 ALTER TABLE `user_session`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_8849CBDE899DB076` (`fk_id_user`);
+  ADD KEY `IDX_8849CBDE899DB076` (`fk_id_utente`);
 
 --
 -- AUTO_INCREMENT per le tabelle scaricate
@@ -223,7 +248,7 @@ ALTER TABLE `user_session`
 -- AUTO_INCREMENT per la tabella `eventi`
 --
 ALTER TABLE `eventi`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 
 --
 -- AUTO_INCREMENT per la tabella `priorita`
@@ -235,13 +260,13 @@ ALTER TABLE `priorita`
 -- AUTO_INCREMENT per la tabella `progetti`
 --
 ALTER TABLE `progetti`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT per la tabella `statistiche`
 --
 ALTER TABLE `statistiche`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT per la tabella `user`
@@ -270,7 +295,7 @@ ALTER TABLE `eventi`
 -- Limiti per la tabella `user_session`
 --
 ALTER TABLE `user_session`
-  ADD CONSTRAINT `FK_8849CBDE899DB076` FOREIGN KEY (`fk_id_user`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `FK_8849CBDE899DB076` FOREIGN KEY (`fk_id_utente`) REFERENCES `user` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -70,7 +70,7 @@ class UserRepository extends ServiceEntityRepository
         $sql = '
             SELECT e.* FROM eventi e, user u
             WHERE u.id = e.fk_id_utente_id AND e.fk_id_utente_id = :userId AND e.completato = 0
-            ORDER BY e.priorita, e.id ASC
+            ORDER BY e.priorita, e.id DESC
             ';
         $stmt = $conn->prepare($sql);
         $stmt->execute(['userId' => $userId]);
@@ -98,7 +98,7 @@ class UserRepository extends ServiceEntityRepository
         $sql = '
             SELECT e.* FROM eventi e, user u
             WHERE u.id = e.fk_id_utente_id AND e.fk_id_utente_id = :userId AND e.completato = 1
-            ORDER BY e.priorita, e.id ASC
+            ORDER BY e.priorita, e.id DESC
             ';
         $stmt = $conn->prepare($sql);
         $stmt->execute(['userId' => $userId]);
